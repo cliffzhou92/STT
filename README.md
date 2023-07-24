@@ -1,4 +1,4 @@
-# scTT
+# STT
 
 ## Introduction
 We present a spatial transition tensor (STT) method that utilizes mRNA splicing and spatial transcriptomes through a multiscale dynamical model to characterize multi-stability in space. By learning a four-dimensional transition tensor and spatial-constrained random walk, STT reconstructs cell-state specific dynamics and spatial state-transitions via both short-time local tensor streamlines between cells and long-time transition paths among attractors. Overall, STT provides a consistent multiscale description of single-cell transcriptome data across multiple spatiotemporal scales. 
