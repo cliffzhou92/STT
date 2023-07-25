@@ -7,7 +7,17 @@ We present a spatial transition tensor (STT) method that utilizes mRNA splicing 
 <img src="https://github.com/cliffzhou92/STT/blob/main/img/Picture1.png" width="800">
 
 ## Get Started
-Install the dependencies by ``pip install -r requirements.txt``, and change directory to the ``./example_notebooks``
+Install the dependencies by ``pip install -r requirements.txt``, and change directory to the ``./example_notebooks``. Run the results with Jupyter Lab.
+
+In MAC OS, if there's an issue with installing ptsc related packages, it's recommended to refer to the trouble shooting [here](https://pygpcca.readthedocs.io/en/latest/installation.html). Or below is alternative way to install in a seprate conda environment:
+
+```
+conda create -n stt python==3.7.6
+conda activate stt
+brew install gcc open-mpi openblas lapack arpack
+pip install -r requirements-macos.txt
+conda install -c conda-forge pygpcca
+```
 
 ## Basic Usage
 ```python
