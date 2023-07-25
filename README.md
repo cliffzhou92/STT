@@ -11,7 +11,7 @@ Install the dependencies by ``pip install -r requirements.txt``, and change dire
 
 In MAC OS, if there's an issue with installing ptsc related packages, it's recommended to refer to the trouble shooting [here](https://pygpcca.readthedocs.io/en/latest/installation.html). Or below is alternative way to install in a seprate conda environment:
 
-```
+```bash
 conda create -n stt python==3.7.6
 conda activate stt
 brew install gcc open-mpi openblas lapack arpack
