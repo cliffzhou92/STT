@@ -9,7 +9,7 @@ We present a spatial transition tensor (STT) method that utilizes mRNA splicing 
 ## Get Started
 Install the dependencies by ``pip install -r requirements.txt``, and change directory to the ``./example_notebooks``. Run the results with Jupyter Lab.
 
-In MAC OS, if there's an issue with installing ptsc related packages, it's recommended to refer to the trouble shooting [here](https://pygpcca.readthedocs.io/en/latest/installation.html). Or below is alternative way to install in a seprate conda environment:
+In MAC OS, if there's an issue with installing ptsc-related packages, it's recommended to refer to the trouble shooting [here](https://pygpcca.readthedocs.io/en/latest/installation.html). Or below is alternative way to install in a seprate conda environment:
 
 ```bash
 conda create -n stt python==3.7.6
@@ -26,14 +26,14 @@ adata.obs['attractor'] =  # initialize the attractor, can use leiden or original
 adata_aggr = st.dynamical_iteration(adata,n_states =K, n_iter = 20, weight_connectivities = 0.5, n_neighbors = 100, n_components = 20,thresh_ms_gene = 0,thresh_entropy = 0.1)
 # n_states: number of attractors
 # n_iter: maximum of iteration
-# thresh_entropy: the threshold of maximum entropy difference between iterations to halt iteration, default is 0.1
+# thresh_entropy: the threshold of entropy difference between iterations to halt iteration, default is 0.1
 # weight_connectivities: the weight of diffusion kernel as opposed to velocity kernel, default is 0.5
-# n_neighbors: number of neghbors used to constrcut cellular random walk, default is 100
-# n_component: number of eigen components to use in GPCCA decomposion, default is 20
+# n_neighbors: number of neighbors used to construct cellular random walk, default is 100
+# n_component: number of eigen components to use in GPCCA decomposition, default is 20
 # thresh_ms_gene: the threshold of minimum multi-stability score of genes to include when constructing random walk, default is 0
 st.infer_lineage(adata,si=4,sf=3) # infer and plot the transition path
 st.plot_tensor(adata, adata_aggr,  basis = 'trans_coord',list_attractor = [0,1,2,3]) # plot the transition tensor components
-st.plot_top_genes(adata, top_genes = 10) # plot the U-S diagram of top genes with highest multi-stability score
+st.plot_top_genes(adata, top_genes = 10) # plot the U-S diagram of top genes with the highest multi-stability score
 
 ```
 The full tutorials are provided as example notebooks below.
