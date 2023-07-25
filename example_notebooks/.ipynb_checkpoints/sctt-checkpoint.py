@@ -272,7 +272,7 @@ def aver_velo(tensor_v,membership):
     
     return velo
 
-def dynamical_iteration(adata, n_states = None, n_states_seq = None, n_iter = 10, return_aggr_obj=False, weight_connectivities=0.2, n_components=20, n_neighbors = 100,thresh_ms_gene = 0, thresh_entropy = 0.1, use_spatial = False, spa_weight = 0.5, spa_conn_key = 'spatial', stop_cr = 'abs'):
+def dynamical_iteration(adata, n_states = None, n_states_seq = None, n_iter = 10, return_aggr_obj=False, weight_connectivities=0.2, n_components=20, n_neighbors = 100,thresh_ms_gene = 0, thresh_entropy = 0.1, use_spatial = False, spa_weight = 0.5, spa_conn_key = 'spatial'):
     adata.uns['da_out']={}
     rho = pd.get_dummies(adata.obs['attractor']).to_numpy()
     construct_tenstor(adata,rho = rho)
@@ -319,15 +319,8 @@ def dynamical_iteration(adata, n_states = None, n_states_seq = None, n_iter = 10
         
         
         entropy = -np.sum(rho*np.log(rho+1e-8),axis = 1)
-        
-        if stop_cr == 'rel':
-            err_ent = np.quantile(np.abs(entropy-entropy_orig)/np.abs(entropy_orig),0.75)
-        
-        if stop_cr == 'abs':
-            err_ent = np.amax(np.abs(entropy-entropy_orig))
-        
+        err_ent = np.quantile(np.abs(entropy-entropy_orig)/np.abs(entropy_orig),0.75)
         print(err_ent)
-        
         if err_ent < thresh_entropy:
             break
     
