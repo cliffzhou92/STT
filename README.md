@@ -30,8 +30,11 @@ The full tutorials are provided as example notebooks below.
 ## Example Notebooks
 **System** | **Data Source** | **Notebook File**
 ------------| -------------- | ------------
-Toggle-switch | [Simulation Data](https://github.com/cliffzhou92/scTT/blob/main/data/toggle_switch/generating_toggle_data.ipynb) in this study | [notebook](https://github.com/cliffzhou92/scTT/blob/main/example_notebooks/example_toggle.ipynb)
-EMT circuit | [Simulation Data](https://github.com/cliffzhou92/scTT/tree/main/data/emt_sim/Generating_Dataset.ipynb) in this study |[notebook](https://github.com/cliffzhou92/scTT/blob/main/example_notebooks/example_emt_circuit.ipynb)
-EMT of A549 cell lines |[Cook et al.](https://www.nature.com/articles/s41467-020-16066-2)|[notebook](https://github.com/cliffzhou92/scTT/blob/main/example_notebooks/example-emt.ipynb)
-Erythroid lineage in mouse gastrulation |[Pijuan-Sala et al.](https://www.nature.com/articles/s41586-019-0933-9) and [scVelo](https://scvelo.readthedocs.io/scvelo.datasets.gastrulation_erythroid/)|[notebook](https://github.com/cliffzhou92/scTT/blob/main/example_notebooks/example-mouse_eryth.ipynb)
-Adult human bone marrow | [Setty et al.](https://www.nature.com/articles/s41587-019-0068-4) and [scVelo](https://scvelo.readthedocs.io/scvelo.datasets.bonemarrow/)| [notebook](https://github.com/cliffzhou92/scTT/blob/main/example_notebooks/examplebone_marrow.ipynb)
+Toggle-switch | [Simulation Data](https://github.com/cliffzhou92/STT/blob/main/data/toggle_switch/generating_toggle_data.ipynb) in this study | [notebook](https://github.com/cliffzhou92/STT/blob/main/example_notebooks/example_toggle.ipynb)
+EMT circuit | [Simulation Data](https://github.com/cliffzhou92/STT/tree/main/data/emt_sim/Generating_Dataset.ipynb) in this study |[notebook](https://github.com/cliffzhou92/scTT/blob/main/example_notebooks/example_emt_circuit.ipynb)
+EMT of A549 cell lines |[Cook et al.](https://www.nature.com/articles/s41467-020-16066-2)|[notebook](https://github.com/cliffzhou92/STT/blob/main/example_notebooks/example-emt.ipynb)
+Erythroid lineage in mouse gastrulation |[Pijuan-Sala et al.](https://www.nature.com/articles/s41586-019-0933-9) and [scVelo](https://scvelo.readthedocs.io/scvelo.datasets.gastrulation_erythroid/)|[notebook](https://github.com/cliffzhou92/STT/blob/main/example_notebooks/example-mouse_eryth.ipynb)
+Adult human bone marrow | [Setty et al.](https://www.nature.com/articles/s41587-019-0068-4) and [scVelo](https://scvelo.readthedocs.io/scvelo.datasets.bonemarrow/)| [notebook](https://github.com/cliffzhou92/STT/blob/main/example_notebooks/example-bone_marrow.ipynb)
+Developing Mouse Brain | [Manno et al.](https://www.nature.com/articles/s41586-021-03775-x) and [SIRV](https://zenodo.org/record/6798659)| [notebook](https://github.com/cliffzhou92/STT/blob/main/example_notebooks/example-mouse_brain-spatial.ipynb)
+Developing Chicken Heart | [Mantri et al.](https://www.nature.com/articles/s41467-021-21892-z) and [SIRV](https://zenodo.org/record/6798659)| [notebook](https://github.com/cliffzhou92/STT/blob/main/example_notebooks/example-chicken_heart.ipynb)
+
