@@ -15,8 +15,8 @@ In MAC OS, if there's an issue with installing ptsc related packages, it's recom
 conda create -n stt python==3.7.6
 conda activate stt
 brew install gcc open-mpi openblas lapack arpack
-pip install -r requirements-macos.txt
 conda install -c conda-forge pygpcca
+pip install -r requirements-macos.txt
 ```
 
 ## Basic Usage
