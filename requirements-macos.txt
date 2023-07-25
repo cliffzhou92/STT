@@ -5,18 +5,14 @@ gseapy==1.0.4
 jupyterlab
 matplotlib==3.5.3
 msmtools==1.2.5
+mpi4py == 3.0.3
 numpy==1.21.6
-openmpi==3.0.3
 pandas==1.2.4
 plotly==4.14.1
-petsc==3.13.0
-petsc4py==3.13.0
 pyEMMA==2.5.6
 scanpy==1.9.3
 scikit_learn==0.23.2
 scipy==1.5.2
 scvelo==0.2.4
 seaborn==0.12.2
-slepc==3.13.0
-slepc4py==3.13.0
-leidenalg==0.7.0
+leidenalg
