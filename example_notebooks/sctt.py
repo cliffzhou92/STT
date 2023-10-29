@@ -30,9 +30,37 @@ from cellrank.tl.kernels import ConnectivityKernel
 import plotly.graph_objects as go
 from collections import defaultdict
 
-
 def dynamical_analysis(sc_object,sc_object_aggr, n_states = None, n_states_seq = None, weight_connectivities=0.2, n_components=20, thresh_ms_gene = 0, use_spatial = False, spa_weight = 0.5, spa_conn_key = 'spatial'):
-    
+    """
+    Perform STT dynamical analysis on a single-cell transcriptomics dataset.
+
+    Parameters:
+    -----------
+    sc_object : AnnData object
+        Annotated data matrix with rows for cells and columns for genes.
+    sc_object_aggr : AnnData object
+        Annotated data matrix with rows for cell aggregates and columns for genes.
+    n_states : int, optional
+        Number of macrostates to compute. If None, n_states_seq must be provided.
+    n_states_seq : list of int, optional
+        Sequence of number of macrostates to compute. If None, n_states must be provided.
+    weight_connectivities : float, optional
+        Weight of gene expression similarity connectivities in computing the transition matrix.
+    n_components : int, optional
+        Number of components to compute in the Schur decomposition.
+    thresh_ms_gene : float, optional
+        Threshold for selecting genes based on their mean squared expression.
+    use_spatial : bool, optional
+        Whether to use spatial information in computing the transition matrix.
+    spa_weight : float, optional
+        Weight of spatial similarity in computing the transition matrix.
+    spa_conn_key : str, optional
+        Key for accessing the spatial connectivities in the AnnData object.
+
+    Returns:
+    --------
+    None
+    """
     gene_select = sc_object.var['r2'][sc_object.var['r2']>thresh_ms_gene].index.tolist()
     gene_subset = [gene+'_u' for gene in gene_select]+gene_select
     
@@ -482,9 +510,6 @@ def plot_para_hist(adata, bins = 20, log = True,figsize = (8,8)):
         axs[i].set_ylabel('density')
         axs[i].set_title(title_name)
 
-import plotly.graph_objects as go
-from collections import defaultdict
-import seaborn as sns
 
 def plot_sankey(vector1, vector2):
     # Ensure both vectors have the same length.
@@ -527,8 +552,7 @@ def plot_sankey(vector1, vector2):
 
     fig.update_layout(title_text="Sankey Diagram", font_size=20)
     fig.show()        
-        
-        
+                
 def compute_tensor_similarity(adata, adata_aggr, pathway1, pathway2, state = 'spliced', attractor = None):
     if attractor == None:
         velo =  adata.obsm['tensor_v_aver'].copy()

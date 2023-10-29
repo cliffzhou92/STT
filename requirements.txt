@@ -6,7 +6,7 @@ jupyterlab
 matplotlib==3.5.3
 msmtools==1.2.5
 numpy==1.21.6
-openmpi==3.0.3
+#openmpi==3.0.3
 pandas==1.2.4
 plotly==4.14.1
 petsc==3.13.0
@@ -19,4 +19,4 @@ scvelo==0.2.4
 seaborn==0.12.2
 slepc==3.13.0
 slepc4py==3.13.0
-leidenalg==0.7.0
+leidenalg==0.8.0
