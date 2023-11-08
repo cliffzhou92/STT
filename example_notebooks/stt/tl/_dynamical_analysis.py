@@ -6,6 +6,7 @@ import scanpy as sc
 import cellrank as cr
 from cellrank.tl.estimators import GPCCA
 from cellrank.tl.kernels import ConnectivityKernel
+from sklearn.model_selection import train_test_split
 
 
 def dynamical_analysis(sc_object,sc_object_aggr, n_states = None, n_states_seq = None, weight_connectivities=0.2, n_components=20, thresh_ms_gene = 0, use_spatial = False, spa_weight = 0.5, spa_conn_key = 'spatial'):
@@ -74,45 +75,54 @@ def dynamical_analysis(sc_object,sc_object_aggr, n_states = None, n_states_seq =
     sc_object_aggr.uns['gene_subset'] = gene_subset
 
 
-def construct_tenstor(adata, rho):
+def construct_tenstor(adata, rho, portion = 0.8):
     # tensor N_c*N_g*2*K
     K = rho.shape[1]
     par = np.zeros((adata.shape[1],K+1))
     tensor_v = np.zeros((adata.shape[0],adata.shape[1],2,K))
-    r2 = np.zeros(adata.shape[1])
+    r2_train = np.zeros(adata.shape[1])
+    r2_test = np.zeros(adata.shape[1])
  
-    for i in range(adata.shape[1]):
-        U = adata.layers['Mu'][:,i]
-        S = adata.layers['Ms'][:,i]
-        
-        if 'toarray' in dir(U):
-            U = U.toarray().flatten()
-            S = S.toarray().flatten()
-        
-        m_c = np.zeros(K)
-        U_c_var = np.zeros(adata.shape[0])
-        
-        for c in range(K):
-            m_c[c] = np.average(U,weights = rho[:,c])
-        
-        for k in range(adata.shape[0]):
-            U_c_var[k] = np.inner((U[k]-m_c)**2,rho[k,:])
-        
-        par[i,K]= np.inner(U,S)/np.sum(U**2+U_c_var)  #beta
-        par[i,:K] = m_c*par[i,K] #alpha
-        
-        U_beta = par[i,K]*U
-        var_reg = np.sum((par[i,K]*U-S)**2)+np.sum(((U_beta[:,np.newaxis]-par[i,:K])**2)*rho)
-        var_all = adata.shape[0]*(np.var(S)+np.var(U_beta))
-        
-        r2[i] = 1- var_reg/var_all
-    
     U = adata.layers['Mu']
     S = adata.layers['Ms']
-
     if 'toarray' in dir(U):
         U = U.toarray()
         S = S.toarray()
+    
+    U_train, U_test, S_train, S_test, rho_train, rho_rest = train_test_split(U, S, rho, test_size=1-portion, random_state=42)
+
+    for i in range(adata.shape[1]):
+        u_train = U_train[:,i]
+        s_train = S_train[:,i]
+        u_test = U_test[:,i]
+        s_test = S_test[:,i]
+        
+        if 'toarray' in dir(u_train):
+            u_train = u_train.toarray().flatten()
+            s_train = s_train.toarray().flatten()
+        
+        m_c = np.zeros(K)
+        U_c_var = np.zeros(U_train.shape[0])
+        
+        for c in range(K):
+            m_c[c] = np.average(u_train,weights = rho_train[:,c])
+        
+        for k in range(U_train.shape[0]):
+            U_c_var[k] = np.inner((u_train[k]-m_c)**2,rho_train[k,:])
+        
+        par[i,K]= np.inner(u_train,s_train)/np.sum(u_train**2+U_c_var)  #beta
+        par[i,:K] = m_c*par[i,K] #alpha
+        
+        U_beta_train = par[i,K]*u_train
+        U_beta_test = par[i,K]*u_test[:,i]
+        var_reg_train = np.sum((par[i,K]*u_train-s_train)**2)+np.sum(((U_beta_train[:,np.newaxis]-par[i,:K])**2)*rho_train)
+        var_reg_test = np.sum((par[i,K]*u_test[:,i]-s_test[:,i])**2)+np.sum(((U_beta_test[:,np.newaxis]-par[i,:K])**2)*rho_rest)
+        var_all_train = U_train.shape[0]*(np.var(s_train)+np.var(U_beta_train))
+        var_all_test = U_test.shape[0]*(np.var(s_test)+np.var(U_beta_test))
+        
+        r2_train[i] = 1- var_reg_train/var_all_train
+        r2_test[i] = 1- var_reg_test/var_all_test
+    
 
     for i in range(K):        
         tensor_v [:,:,0,i] = (par[:,i]- U * par[:,K])
@@ -121,7 +131,8 @@ def construct_tenstor(adata, rho):
         
     adata.uns['par'] = par
     adata.obsm['tensor_v'] = tensor_v
-    adata.var['r2'] = r2
+    adata.var['r2_train'] = r2_train
+    adata.var['r2_test'] = r2_test
     
 def aver_velo(tensor_v,membership):
     (N_c,N_g,_,_) = np.shape(tensor_v)
