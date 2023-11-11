@@ -40,9 +40,12 @@ def dynamical_analysis(sc_object,sc_object_aggr, n_states = None, n_states_seq =
     --------
     None
     """
-    gene_select = sc_object.var['r2'][sc_object.var['r2']>thresh_ms_gene].index.tolist()
+    gene_select = sc_object.var['r2_test'][sc_object.var['r2_test']>thresh_ms_gene].index.tolist()
     gene_subset = [gene+'_u' for gene in gene_select]+gene_select
-    
+    r2_keep_test = sc_object.var['r2_test'][sc_object.var['r2_test']>thresh_ms_gene]
+    r2_keep_train = sc_object.var['r2_train'][sc_object.var['r2_test']>thresh_ms_gene]   
+
+
     kernel = cr.tl.transition_matrix(sc_object_aggr, weight_connectivities=weight_connectivities,  n_jobs=-1,scheme = 'dot_product',gene_subset = gene_subset )
     
     if use_spatial:
@@ -70,9 +73,13 @@ def dynamical_analysis(sc_object,sc_object_aggr, n_states = None, n_states_seq =
     sc_object.uns['da_out']['membership'] = g_fwd.macrostates_memberships.X
     sc_object.uns['da_out']['gene_select'] = gene_select
     sc_object.obsm['rho'] = g_fwd.macrostates_memberships.X
+
     
     sc_object_aggr.obs['attractor'] = sc_object.obs['attractor'].values
     sc_object_aggr.uns['gene_subset'] = gene_subset
+    sc_object.uns['r2_keep_train'] = r2_keep_train
+    sc_object.uns['r2_keep_test'] = r2_keep_test
+
 
 
 def construct_tenstor(adata, rho, portion = 0.8):
@@ -114,9 +121,9 @@ def construct_tenstor(adata, rho, portion = 0.8):
         par[i,:K] = m_c*par[i,K] #alpha
         
         U_beta_train = par[i,K]*u_train
-        U_beta_test = par[i,K]*u_test[:,i]
+        U_beta_test = par[i,K]*u_test
         var_reg_train = np.sum((par[i,K]*u_train-s_train)**2)+np.sum(((U_beta_train[:,np.newaxis]-par[i,:K])**2)*rho_train)
-        var_reg_test = np.sum((par[i,K]*u_test[:,i]-s_test[:,i])**2)+np.sum(((U_beta_test[:,np.newaxis]-par[i,:K])**2)*rho_rest)
+        var_reg_test = np.sum((par[i,K]*u_test-s_test)**2)+np.sum(((U_beta_test[:,np.newaxis]-par[i,:K])**2)*rho_rest)
         var_all_train = U_train.shape[0]*(np.var(s_train)+np.var(U_beta_train))
         var_all_test = U_test.shape[0]*(np.var(s_test)+np.var(U_beta_test))
         
@@ -145,7 +152,7 @@ def aver_velo(tensor_v,membership):
     
     return velo
 
-def dynamical_iteration(adata, n_states=None, n_states_seq=None, n_iter=10, return_aggr_obj=False, weight_connectivities=0.2, n_components=20, n_neighbors=100, thresh_ms_gene=0, thresh_entropy=0.1, use_spatial=False, spa_weight=0.5, spa_conn_key='spatial', stop_cr='abs'):
+def dynamical_iteration(adata, n_states=None, n_states_seq=None, n_iter=10, return_aggr_obj=True, weight_connectivities=0.2, n_components=20, n_neighbors=100, thresh_ms_gene=0, thresh_entropy=0.1, use_spatial=False, spa_weight=0.5, spa_conn_key='spatial', monitor_mode=False):
     """
     Perform dynamical iteration on the given AnnData object.
 
@@ -231,18 +238,36 @@ def dynamical_iteration(adata, n_states=None, n_states_seq=None, n_iter=10, retu
         
         
         entropy = -np.sum(rho*np.log(rho+1e-8),axis = 1)
+        ent_diff_rel = np.abs(entropy-entropy_orig)/np.abs(entropy_orig)
+        err_diff_abs = np.abs(entropy-entropy_orig)
+        ent_diff_rel_series = pd.Series(ent_diff_rel)
+        err_diff_abs_series = pd.Series(err_diff_abs)
+
+        quantiles = [0, 0.25, 0.5, 0.75, 1]
+        print("\nQuantiles for entropy relative difference with last iteration:")
+        print(ent_diff_rel_series.quantile(quantiles))
+
+        print("\nQuantiles for entropy absolute difference with last iteration:")
+        print(err_diff_abs_series.quantile(quantiles))
+
+        err_ent = np.quantile(ent_diff_rel,0.75)
         
-        if stop_cr == 'rel':
-            err_ent = np.quantile(np.abs(entropy-entropy_orig)/np.abs(entropy_orig),0.75)
+        print("\nQuantiles for entropy absolute difference with last iteration:")
         
-        if stop_cr == 'abs':
-            err_ent = np.amax(np.abs(entropy-entropy_orig))
-        
-        print(err_ent)
-        
-        if err_ent < thresh_entropy:
-            break
-    
+        if monitor_mode:
+            user_input = input("Do you want to continue? (y/n): ").strip().lower()
+            if user_input == 'n':
+                    print("Exiting the loop.")
+                    break
+            elif user_input != 'y':
+                    print("Invalid input, please enter 'y' to continue or 'n' to exit.")
+        else:
+            err_ent = np.quantile(ent_diff_rel,0.75)
+            if err_ent < thresh_entropy:
+                print("Entropy difference is below the threshold, exiting the loop.")
+                break
+
+
     adata.obs['entropy'] = entropy
     adata.uns['gene_subset'] = sc_object_aggr.uns['gene_subset']
     sc_object_aggr.layers['Ms'] = np.concatenate((adata.layers['Mu'],adata.layers['Ms']),axis = 1)
