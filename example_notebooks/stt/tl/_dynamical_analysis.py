@@ -96,8 +96,9 @@ def construct_tenstor(adata, rho, portion = 0.8):
         U = U.toarray()
         S = S.toarray()
 
-
-    U_train, U_test, S_train, S_test, rho_train, rho_rest = train_test_split(U, S, rho, test_size=1-portion, random_state=42)
+    label_all = adata.obs['attractor']
+    categories = np.unique(label_all)
+    U_train, U_test, S_train, S_test, rho_train, rho_test,label,_ = train_test_split(U, S, rho, label_all, test_size=1-portion, random_state=42)
 
     for i in range(adata.shape[1]):
         u_train = U_train[:,i]
@@ -109,12 +110,29 @@ def construct_tenstor(adata, rho, portion = 0.8):
             u_train = u_train.toarray().flatten()
             s_train = s_train.toarray().flatten()
         
+        # Initialize an empty list to store indices for each category
+        indices_per_category = []
 
-        u_10, u_90 = np.quantile(u_train, [0.1, 0.9])
-        s_10, s_90 = np.quantile(s_train, [0.1, 0.9])
+        for category in categories:
+            # Get indices for the current category
+            cat_indices = np.where(label == category)[0]
 
-        # Find indices where both arrays are within their respective 10%-90% quantiles
-        indices = np.where((u_train >= u_10) & (u_train <= u_90) & (s_train >= s_10) & (s_train <= s_90))[0]
+            # Extract values of u_train and s_train for the current category
+            u_train_cat = u_train[cat_indices]
+            s_train_cat = s_train[cat_indices]
+
+            # Compute 10% and 90% quantiles for each array within the current category
+            u_10, u_90 = np.quantile(u_train_cat, [0.1, 0.9])
+            s_10, s_90 = np.quantile(s_train_cat, [0.1, 0.9])
+
+            # Find indices where both arrays are within their respective 10%-90% quantiles for the current category
+            selected_indices = cat_indices[np.where((u_train_cat >= u_10) & (u_train_cat <= u_90) & (s_train_cat >= s_10) & (s_train_cat <= s_90))[0]]
+
+            # Add these indices to the list
+            indices_per_category.append(selected_indices)
+
+        # Union of all selected indices across categories
+        indices = np.unique(np.concatenate(indices_per_category))
 
         # Extract the values from u_train and s_train using the indices
         u_train_selected = u_train[indices]
@@ -140,7 +158,7 @@ def construct_tenstor(adata, rho, portion = 0.8):
         U_beta_train = par[i,K]*u_train
         U_beta_test = par[i,K]*u_test
         var_reg_train = np.sum((par[i,K]*u_train-s_train)**2)+np.sum(((U_beta_train[:,np.newaxis]-par[i,:K])**2)*rho_train)
-        var_reg_test = np.sum((par[i,K]*u_test-s_test)**2)+np.sum(((U_beta_test[:,np.newaxis]-par[i,:K])**2)*rho_rest)
+        var_reg_test = np.sum((par[i,K]*u_test-s_test)**2)+np.sum(((U_beta_test[:,np.newaxis]-par[i,:K])**2)*rho_test)
         var_all_train = U_train.shape[0]*(np.var(s_train)+np.var(U_beta_train))
         var_all_test = U_test.shape[0]*(np.var(s_test)+np.var(U_beta_test))
         

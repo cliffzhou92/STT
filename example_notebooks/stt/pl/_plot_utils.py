@@ -14,7 +14,7 @@ def plot_top_genes(adata, top_genes = 6, ncols = 2, figsize = (8,8), color_map =
     U = adata.layers['Mu']
     S = adata.layers['Ms']
     
-    gene_sort = adata.var['r2'].sort_values(ascending=False).index.tolist()
+    gene_sort = adata.var['r2_test'].sort_values(ascending=False).index.tolist()
 
     # calculate number of rows
     nrows = top_genes // ncols + (top_genes % ncols > 0)
