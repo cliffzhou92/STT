@@ -95,7 +95,8 @@ def construct_tenstor(adata, rho, portion = 0.8):
     if 'toarray' in dir(U):
         U = U.toarray()
         S = S.toarray()
-    
+
+
     U_train, U_test, S_train, S_test, rho_train, rho_rest = train_test_split(U, S, rho, test_size=1-portion, random_state=42)
 
     for i in range(adata.shape[1]):
@@ -108,16 +109,32 @@ def construct_tenstor(adata, rho, portion = 0.8):
             u_train = u_train.toarray().flatten()
             s_train = s_train.toarray().flatten()
         
+
+        u_10, u_90 = np.quantile(u_train, [0.1, 0.9])
+        s_10, s_90 = np.quantile(s_train, [0.1, 0.9])
+
+        # Find indices where both arrays are within their respective 10%-90% quantiles
+        indices = np.where((u_train >= u_10) & (u_train <= u_90) & (s_train >= s_10) & (s_train <= s_90))[0]
+
+        # Extract the values from u_train and s_train using the indices
+        u_train_selected = u_train[indices]
+        s_train_selected = s_train[indices]
+        rho_train_selected = rho_train[indices,:]
+
         m_c = np.zeros(K)
-        U_c_var = np.zeros(U_train.shape[0])
+        U_c_var = np.zeros(u_train_selected.shape[0])
         
         for c in range(K):
-            m_c[c] = np.average(u_train,weights = rho_train[:,c])
+            if np.max(rho_train_selected[:,c])>0:
+                m_c[c] = np.average(u_train_selected,weights = rho_train_selected[:,c])
+            else:
+                m_c[c] = 0
+
         
-        for k in range(U_train.shape[0]):
-            U_c_var[k] = np.inner((u_train[k]-m_c)**2,rho_train[k,:])
+        for k in range(u_train_selected.shape[0]):
+            U_c_var[k] = np.inner((u_train_selected[k]-m_c)**2,rho_train_selected[k,:])
         
-        par[i,K]= np.inner(u_train,s_train)/np.sum(u_train**2+U_c_var)  #beta
+        par[i,K]= np.inner(u_train_selected,s_train_selected)/np.sum(u_train_selected**2+U_c_var)  #beta
         par[i,:K] = m_c*par[i,K] #alpha
         
         U_beta_train = par[i,K]*u_train

@@ -5,7 +5,7 @@ gseapy==1.0.4
 jupyterlab
 matplotlib==3.5.3
 msmtools==1.2.5
-mpi4py == 3.0.3
+#mpi4py == 3.0.3
 numpy==1.21.6
 pandas==1.2.4
 plotly==4.14.1
