@@ -120,10 +120,20 @@ def construct_tenstor(adata, rho, portion = 0.8):
             # Extract values of u_train and s_train for the current category
             u_train_cat = u_train[cat_indices]
             s_train_cat = s_train[cat_indices]
+            if len(u_train_cat[u_train_cat>0])>0:
+                u_q = u_train_cat[u_train_cat>0]
+            else:
+                u_q = u_train_cat
+            if len(s_train_cat[s_train_cat>0])>0:
+                s_q = s_train_cat[s_train_cat>0]
+            else:
+                s_q = s_train_cat
+
+
 
             # Compute 10% and 90% quantiles for each array within the current category
-            u_10, u_90 = np.quantile(u_train_cat, [0.1, 0.9])
-            s_10, s_90 = np.quantile(s_train_cat, [0.1, 0.9])
+            u_10, u_90 = np.quantile(u_q, [0.1, 0.9])
+            s_10, s_90 = np.quantile(s_q, [0.1, 0.9])
 
             # Find indices where both arrays are within their respective 10%-90% quantiles for the current category
             selected_indices = cat_indices[np.where((u_train_cat >= u_10) & (u_train_cat <= u_90) & (s_train_cat >= s_10) & (s_train_cat <= s_90))[0]]
@@ -133,38 +143,42 @@ def construct_tenstor(adata, rho, portion = 0.8):
 
         # Union of all selected indices across categories
         indices = np.unique(np.concatenate(indices_per_category))
+        if len(indices>=10):
+            # Extract the values from u_train and s_train using the indices
+            u_train_selected = u_train[indices]
+            s_train_selected = s_train[indices]
+            rho_train_selected = rho_train[indices,:]
 
-        # Extract the values from u_train and s_train using the indices
-        u_train_selected = u_train[indices]
-        s_train_selected = s_train[indices]
-        rho_train_selected = rho_train[indices,:]
+            m_c = np.zeros(K)
+            U_c_var = np.zeros(u_train_selected.shape[0])
+            
+            for c in range(K):
+                if np.max(rho_train_selected[:,c])>0:
+                    m_c[c] = np.average(u_train_selected,weights = rho_train_selected[:,c])
+                else:
+                    m_c[c] = 0
 
-        m_c = np.zeros(K)
-        U_c_var = np.zeros(u_train_selected.shape[0])
-        
-        for c in range(K):
-            if np.max(rho_train_selected[:,c])>0:
-                m_c[c] = np.average(u_train_selected,weights = rho_train_selected[:,c])
-            else:
-                m_c[c] = 0
+            
+            for k in range(u_train_selected.shape[0]):
+                U_c_var[k] = np.inner((u_train_selected[k]-m_c)**2,rho_train_selected[k,:])
+            
+            par[i,K]= np.inner(u_train_selected,s_train_selected)/np.sum(u_train_selected**2+U_c_var)  #beta
+            par[i,:K] = m_c*par[i,K] #alpha
+            
+            U_beta_train = par[i,K]*u_train
+            U_beta_test = par[i,K]*u_test
+            var_reg_train = np.sum((par[i,K]*u_train-s_train)**2)+np.sum(((U_beta_train[:,np.newaxis]-par[i,:K])**2)*rho_train)
+            var_reg_test = np.sum((par[i,K]*u_test-s_test)**2)+np.sum(((U_beta_test[:,np.newaxis]-par[i,:K])**2)*rho_test)
+            var_all_train = U_train.shape[0]*(np.var(s_train)+np.var(U_beta_train))
+            var_all_test = U_test.shape[0]*(np.var(s_test)+np.var(U_beta_test))
+            
+            r2_train[i] = 1- var_reg_train/var_all_train
+            r2_test[i] = 1- var_reg_test/var_all_test
+        else:
+            r2_train[i] = -100
+            r2_test[i] = -100
 
         
-        for k in range(u_train_selected.shape[0]):
-            U_c_var[k] = np.inner((u_train_selected[k]-m_c)**2,rho_train_selected[k,:])
-        
-        par[i,K]= np.inner(u_train_selected,s_train_selected)/np.sum(u_train_selected**2+U_c_var)  #beta
-        par[i,:K] = m_c*par[i,K] #alpha
-        
-        U_beta_train = par[i,K]*u_train
-        U_beta_test = par[i,K]*u_test
-        var_reg_train = np.sum((par[i,K]*u_train-s_train)**2)+np.sum(((U_beta_train[:,np.newaxis]-par[i,:K])**2)*rho_train)
-        var_reg_test = np.sum((par[i,K]*u_test-s_test)**2)+np.sum(((U_beta_test[:,np.newaxis]-par[i,:K])**2)*rho_test)
-        var_all_train = U_train.shape[0]*(np.var(s_train)+np.var(U_beta_train))
-        var_all_test = U_test.shape[0]*(np.var(s_test)+np.var(U_beta_test))
-        
-        r2_train[i] = 1- var_reg_train/var_all_train
-        r2_test[i] = 1- var_reg_test/var_all_test
-    
 
     for i in range(K):        
         tensor_v [:,:,0,i] = (par[:,i]- U * par[:,K])

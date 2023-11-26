@@ -8,7 +8,7 @@ import plotly.graph_objects as go
 from collections import defaultdict
 import scvelo as scv
 
-def plot_top_genes(adata, top_genes = 6, ncols = 2, figsize = (8,8), color_map = 'tab10',hspace = 0.5,wspace = 0.5):
+def plot_top_genes(adata, top_genes = 6, ncols = 2, figsize = (8,8), color_map = 'tab10', color ='attractor', attractor = None, hspace = 0.5,wspace = 0.5):
     K = adata.obsm['rho'].shape[1]
     cmp = sns.color_palette(color_map, K)
     U = adata.layers['Mu']
@@ -33,7 +33,11 @@ def plot_top_genes(adata, top_genes = 6, ncols = 2, figsize = (8,8), color_map =
 
 
         ax = plt.subplot(nrows, ncols, gene_id + 1)
-        scv.pl.scatter(adata, x = S[:,ind_g],y = U[:,ind_g],color = 'attractor',show=False,alpha = 0.5,size = 50,ax=ax)
+        
+        if color == 'attractor':
+            scv.pl.scatter(adata, x = S[:,ind_g],y = U[:,ind_g],color = 'attractor',show=False,alpha = 0.5,size = 50,ax=ax)
+        if color == 'membership':
+            scv.pl.scatter(adata, x = S[:,ind_g],y = U[:,ind_g],color = adata.obsm['rho'][:,attractor] ,show=False,size = 20,ax=ax)
         ax.axline((0, 0), slope=1/beta,color = 'k')
         ax.set_title(gene_name)
         for i in range(K):
