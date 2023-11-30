@@ -46,8 +46,10 @@ def dynamical_analysis(sc_object,sc_object_aggr, n_states = None, n_states_seq =
     r2_keep_train = sc_object.var['r2_train'][sc_object.var['r2_test']>thresh_ms_gene]   
 
 
-    kernel = cr.tl.transition_matrix(sc_object_aggr, weight_connectivities=weight_connectivities,  n_jobs=-1,scheme = 'dot_product',gene_subset = gene_subset )
-    
+    kernel_tensor = cr.tl.transition_matrix(sc_object_aggr, weight_connectivities=0,  n_jobs=-1,scheme = 'dot_product',gene_subset = gene_subset )
+    kernel_similarity = ConnectivityKernel(sc_object)
+    kernel_similarity.compute_transition_matrix(density_normalize = False)
+    kernel = (1-weight_connectivities)*kernel_tensor+weight_connectivities*kernel_similarity
     if use_spatial:
         spa_kernel = ConnectivityKernel(sc_object,conn_key=spa_conn_key+'_connectivities')
         spa_kernel.compute_transition_matrix()
@@ -310,6 +312,22 @@ def dynamical_iteration(adata, n_states=None, n_states_seq=None, n_iter=10, retu
                     break
             elif user_input != 'y':
                     print("Invalid input, please enter 'y' to continue or 'n' to exit.")
+            
+            print(f"Current values:\n weight_connectivities: {weight_connectivities}, thresh_ms_gene: {thresh_ms_gene}, spa_weight: {spa_weight}")
+
+            # Ask for updates
+            update_choice = input("Do you want to update parameters? (y/n): ").lower()
+            if update_choice == 'y':
+                # Ask for each parameter and update if the user wishes to change it
+                new_weight_connectivities = input(f"Enter new value for weight_connectivities (current: {weight_connectivities}) or press Enter to keep current: ")
+                weight_connectivities = float(new_weight_connectivities) if new_weight_connectivities else weight_connectivities
+
+                new_thresh_ms_gene = input(f"Enter new value for thresh_ms_gene (current: {thresh_ms_gene}) or press Enter to keep current: ")
+                thresh_ms_gene = float(new_thresh_ms_gene) if new_thresh_ms_gene else thresh_ms_gene
+
+                new_spa_weight = input(f"Enter new value for spa_weight (current: {spa_weight}) or press Enter to keep current: ")
+                spa_weight = float(new_spa_weight) if new_spa_weight else spa_weight
+
         else:
             err_ent = np.quantile(ent_diff_rel,0.75)
             if err_ent < thresh_entropy:
