@@ -46,17 +46,15 @@ def dynamical_analysis(sc_object,sc_object_aggr, n_states = None, n_states_seq =
     r2_keep_train = sc_object.var['r2_train'][sc_object.var['r2_test']>thresh_ms_gene]   
 
 
-    kernel_tensor = cr.tl.transition_matrix(sc_object_aggr, weight_connectivities=0,  n_jobs=-1,scheme = 'dot_product',gene_subset = gene_subset )
-    kernel_similarity = ConnectivityKernel(sc_object)
-    kernel_similarity.compute_transition_matrix(density_normalize = False)
-    kernel = (1-weight_connectivities)*kernel_tensor+weight_connectivities*kernel_similarity
+    #kernel_tensor = cr.tl.transition_matrix(sc_object_aggr, weight_connectivities=0,  n_jobs=-1,scheme = 'dot_product',gene_subset = gene_subset)
+    kernel_tensor = cr.tl.kernels.VelocityKernel(sc_object_aggr, gene_subset = gene_subset)
+    kernel_tensor.compute_transition_matrix(n_jobs=-1,show_progress_bar = False,scheme = 'dot_product')
+
+    kernel = (1-weight_connectivities)*kernel_tensor+weight_connectivities*sc_object.uns['kernel_connectivities']
     if use_spatial:
-        spa_kernel = ConnectivityKernel(sc_object,conn_key=spa_conn_key+'_connectivities')
-        spa_kernel.compute_transition_matrix()
-        kernel = (1-spa_weight)*kernel + spa_weight*spa_kernel
-    print(kernel)    
-    g_fwd = GPCCA(kernel)
+        kernel = (1-spa_weight)*kernel + spa_weight*sc_object.uns['kernel_spatial']
     
+    g_fwd = GPCCA(kernel)
     g_fwd.compute_schur(n_components=n_components)
     
     if n_states == None:
@@ -74,6 +72,7 @@ def dynamical_analysis(sc_object,sc_object_aggr, n_states = None, n_states_seq =
     sc_object.uns['da_out']['mu_hat'] = g_fwd.coarse_stationary_distribution.to_numpy()
     sc_object.uns['da_out']['membership'] = g_fwd.macrostates_memberships.X
     sc_object.uns['da_out']['gene_select'] = gene_select
+    sc_object.uns['kernel'] = kernel
     sc_object.obsm['rho'] = g_fwd.macrostates_memberships.X
 
     
@@ -84,7 +83,7 @@ def dynamical_analysis(sc_object,sc_object_aggr, n_states = None, n_states_seq =
 
 
 
-def construct_tenstor(adata, rho, portion = 0.8):
+def construct_tenstor(adata, rho, portion = 0.8,l=0):
     # tensor N_c*N_g*2*K
     K = rho.shape[1]
     par = np.zeros((adata.shape[1],K+1))
@@ -112,14 +111,10 @@ def construct_tenstor(adata, rho, portion = 0.8):
             u_train = u_train.toarray().flatten()
             s_train = s_train.toarray().flatten()
         
-        # Initialize an empty list to store indices for each category
         indices_per_category = []
 
         for category in categories:
-            # Get indices for the current category
             cat_indices = np.where(label == category)[0]
-
-            # Extract values of u_train and s_train for the current category
             u_train_cat = u_train[cat_indices]
             s_train_cat = s_train[cat_indices]
             if len(u_train_cat[u_train_cat>0])>0:
@@ -131,19 +126,11 @@ def construct_tenstor(adata, rho, portion = 0.8):
             else:
                 s_q = s_train_cat
 
-
-
-            # Compute 10% and 90% quantiles for each array within the current category
             u_10, u_90 = np.quantile(u_q, [0.1, 0.9])
             s_10, s_90 = np.quantile(s_q, [0.1, 0.9])
-
-            # Find indices where both arrays are within their respective 10%-90% quantiles for the current category
             selected_indices = cat_indices[np.where((u_train_cat >= u_10) & (u_train_cat <= u_90) & (s_train_cat >= s_10) & (s_train_cat <= s_90))[0]]
-
-            # Add these indices to the list
             indices_per_category.append(selected_indices)
 
-        # Union of all selected indices across categories
         indices = np.unique(np.concatenate(indices_per_category))
         if len(indices>=10):
             # Extract the values from u_train and s_train using the indices
@@ -156,7 +143,7 @@ def construct_tenstor(adata, rho, portion = 0.8):
             
             for c in range(K):
                 if np.max(rho_train_selected[:,c])>0:
-                    m_c[c] = np.average(u_train_selected,weights = rho_train_selected[:,c])
+                    m_c[c] =np.inner(u_train_selected,rho_train_selected[:,c])/(np.sum(rho_train_selected[:,c])+l) #np.average(u_train_selected,weights = rho_train_selected[:,c])
                 else:
                     m_c[c] = 0
 
@@ -164,7 +151,7 @@ def construct_tenstor(adata, rho, portion = 0.8):
             for k in range(u_train_selected.shape[0]):
                 U_c_var[k] = np.inner((u_train_selected[k]-m_c)**2,rho_train_selected[k,:])
             
-            par[i,K]= np.inner(u_train_selected,s_train_selected)/np.sum(u_train_selected**2+U_c_var)  #beta
+            par[i,K]= np.inner(u_train_selected,s_train_selected)/(np.sum(u_train_selected**2+U_c_var)+l)  #beta
             par[i,:K] = m_c*par[i,K] #alpha
             
             U_beta_train = par[i,K]*u_train
@@ -203,7 +190,7 @@ def aver_velo(tensor_v,membership):
     
     return velo
 
-def dynamical_iteration(adata, n_states=None, n_states_seq=None, n_iter=10, return_aggr_obj=True, weight_connectivities=0.2, n_components=20, n_neighbors=100, thresh_ms_gene=0, thresh_entropy=0.1, use_spatial=False, spa_weight=0.5, spa_conn_key='spatial', monitor_mode=False):
+def dynamical_iteration(adata, n_states=None, n_states_seq=None, n_iter=10, return_aggr_obj=True, weight_connectivities=0.2, n_components=20, n_neighbors=100, thresh_ms_gene=0, thresh_entropy=0.1, use_spatial=False, spa_weight=0.5, spa_conn_key='spatial', monitor_mode=False, l2=0.1):
     """
     Perform dynamical iteration on the given AnnData object.
 
@@ -248,6 +235,13 @@ def dynamical_iteration(adata, n_states=None, n_states_seq=None, n_iter=10, retu
     construct_tenstor(adata,rho = rho)
     adata.obsm['tensor_v_aver'] = aver_velo(adata.obsm['tensor_v'],rho) 
     adata.obsm['rho'] =rho 
+    kernel_similarity = ConnectivityKernel(adata)
+    kernel_similarity.compute_transition_matrix(density_normalize = False)
+    adata.uns['kernel_connectivities'] = kernel_similarity
+    if use_spatial:
+        spa_kernel = ConnectivityKernel(adata,conn_key=spa_conn_key+'_connectivities')
+        spa_kernel.compute_transition_matrix()
+        adata.uns['kernel_spatial'] = spa_kernel
     
     U = adata.layers['unspliced']
     S = adata.layers['spliced']
@@ -270,19 +264,17 @@ def dynamical_iteration(adata, n_states=None, n_states_seq=None, n_iter=10, retu
     sc_object_aggr.var['highly_variable'] = True
     
     for i in range(n_iter):
-        velo_orig = adata.obsm['tensor_v_aver']
-        rho_orig =  rho
         entropy_orig = entropy
         
         sc.tl.pca(sc_object_aggr,use_highly_variable = True)
-        sc.pp.neighbors(sc_object_aggr,n_neighbors = n_neighbors)
+        sc.pp.neighbors(sc_object_aggr,n_neighbors = n_neighbors)#update the neighbors using multistable genes
         dynamical_analysis(adata, sc_object_aggr, n_states = n_states,n_states_seq=n_states_seq, weight_connectivities=weight_connectivities, n_components = n_components,thresh_ms_gene = thresh_ms_gene, use_spatial = use_spatial, spa_weight = spa_weight, spa_conn_key = spa_conn_key)
         
         rho = adata.obsm['rho']
         adata.obs['attractor'] =  np.argmax(rho,axis = 1)
         adata.obs['attractor'] = adata.obs['attractor'].astype('category')
         
-        construct_tenstor(adata,rho = rho)
+        construct_tenstor(adata,rho = rho,l=l2)
         adata.obsm['tensor_v_aver'] = aver_velo(adata.obsm['tensor_v'],rho)
         sc_object_aggr.layers['velocity']= np.concatenate((adata.obsm['tensor_v_aver'][:,:,0],adata.obsm['tensor_v_aver'][:,:,1]),axis = 1)
         sc_object_aggr.var['highly_variable'] = [genes in sc_object_aggr.uns['gene_subset'] for genes in sc_object_aggr.var_names]
@@ -302,9 +294,7 @@ def dynamical_iteration(adata, n_states=None, n_states_seq=None, n_iter=10, retu
         print(err_diff_abs_series.quantile(quantiles))
 
         err_ent = np.quantile(ent_diff_rel,0.75)
-        
-        print("\nQuantiles for entropy absolute difference with last iteration:")
-        
+                
         if monitor_mode:
             user_input = input("Do you want to continue? (y/n): ").strip().lower()
             if user_input == 'n':
