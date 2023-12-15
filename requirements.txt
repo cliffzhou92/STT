@@ -20,3 +20,4 @@ seaborn==0.12.2
 slepc==3.13.0
 slepc4py==3.13.0
 leidenalg==0.8.0
+umap-learn==0.4.0

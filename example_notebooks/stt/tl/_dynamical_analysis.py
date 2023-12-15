@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 import anndata
-import scvelo as scv
 import scanpy as sc
 import cellrank as cr
 from cellrank.tl.estimators import GPCCA
@@ -328,6 +327,9 @@ def dynamical_iteration(adata, n_states=None, n_states_seq=None, n_iter=10, retu
     adata.obs['entropy'] = entropy
     adata.uns['gene_subset'] = sc_object_aggr.uns['gene_subset']
     sc_object_aggr.layers['Ms'] = np.concatenate((adata.layers['Mu'],adata.layers['Ms']),axis = 1)
+    sc_object_aggr.layers['vj'] = np.concatenate((adata.obsm['tensor_v_aver'][:,:,0],adata.obsm['tensor_v_aver'][:,:,1]),axis = 1)
+
+
     sc_object_aggr = sc_object_aggr[:,sc_object_aggr.uns['gene_subset']]
     adata.obs['speed'] = np.linalg.norm(sc_object_aggr.layers['velocity'],axis=1)
     adata.layers['velo'] = adata.obsm['tensor_v_aver'][:,:,1]
