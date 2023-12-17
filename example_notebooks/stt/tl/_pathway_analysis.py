@@ -26,7 +26,7 @@ def optimal_kmeans(data, k_range):
     final_labels = kmeans.fit_predict(data)
     return final_labels
 
-def compute_pathway(adata,adata_aggr,db_name):
+def compute_pathway(adata,adata_aggr,db_name,gene_num = 3):
     pathway = gp.parser.download_library(name = db_name)
     tpm_dict = {}
     pathway_select = {}
@@ -34,25 +34,39 @@ def compute_pathway(adata,adata_aggr,db_name):
     gene_select = [x in adata.uns['gene_subset'] for x in adata.var_names]
     #velo =  adata.obsm['tensor_v_aver'].copy()
     #adata_aggr.layers['vj'] = np.concatenate((velo[:,gene_select,0],velo[:,gene_select,1]),axis = 1)
+    cor_matrix = np.zeros((len(pathway.keys()), len(pathway.keys())))
 
-
+    idx = 0
     for key in pathway.keys():
         gene_list = [x.capitalize() for x in pathway[key]] 
         gene_select = [x for x in gene_list if x in adata_aggr.var_names]
-        if len(gene_select)>2 and gene_select not in temp:
-                scv.tl.velocity_graph(adata_aggr, vkey = 'vj', xkey = 'Ms', n_jobs = -1)
-                tpm_dict[key] = adata_aggr.uns['vj_graph'].toarray().reshape(-1)
+        gene_pathway = gene_select+[x+'_u' for x in gene_select]
+        if len(gene_select)>=gene_num and gene_select not in temp:
+                adata_aggr_select = adata_aggr[:,gene_pathway]
+                scv.tl.velocity_graph(adata_aggr_select, vkey = 'vj', xkey = 'Ms', n_jobs = -1)
+                current_array = adata_aggr_select.uns['vj_graph'].toarray().reshape(-1)
+                for prev_idx in range(idx):
+                    prev_key = list(pathway_select.keys())[prev_idx]
+                    prev_array = adata_aggr.uns['vj_graph_'+prev_key].toarray().reshape(-1)
+                    cor = np.corrcoef(current_array, prev_array)[0, 1]
+                    cor_matrix[idx][prev_idx] = cor
+                    cor_matrix[prev_idx][idx] = cor
+                adata_aggr.uns['vj_graph_'+key] = adata_aggr_select.uns['vj_graph']
+                #tpm_dict[key] = adata_aggr_select.uns['vj_graph'].toarray().reshape(-1)
                 pathway_select[key] = gene_select
+                idx = idx+1
                 temp.append(gene_select)
     
     adata.uns['pathway_select'] = pathway_select
+    cor_matrix = cor_matrix[:idx,:idx]
 
     # compute correlation
-    arr = np.stack(list(tpm_dict.values()))
-    cor = np.corrcoef(arr)
+    #arr = np.stack(list(tpm_dict.values()))
+    #cor = np.corrcoef(arr)
     # dimensionality reduction
+    
     pca = PCA(n_components=10)
-    pca_embedding = pca.fit_transform(cor)
+    pca_embedding = pca.fit_transform(cor_matrix)
     # Perform UMAP on the PCA embedding
     umap_reducer = umap.UMAP(random_state=42)
     umap_embedding = umap_reducer.fit_transform(pca_embedding)
