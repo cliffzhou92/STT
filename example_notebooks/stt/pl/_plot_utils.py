@@ -1,12 +1,13 @@
 import numpy as np
-import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from matplotlib import cm
-
+import networks as nw
 import plotly.graph_objects as go
 from collections import defaultdict
 import scvelo as scv
+import pyemma.msm as msm
+import scipy
+import scanpy as sc
 
 def plot_top_genes(adata, top_genes = 6, ncols = 2, figsize = (8,8), color_map = 'tab10', color ='attractor', attractor = None, hspace = 0.5,wspace = 0.5):
     K = adata.obsm['rho'].shape[1]
@@ -160,3 +161,97 @@ def compute_tensor_similarity(adata, adata_aggr, pathway1, pathway2, state = 'sp
     scv.tl.velocity_graph(adata, vkey = vkey, xkey = vkey, gene_subset = pathway2,n_jobs = -1)
     tpm2 = adata.uns[vkey+'_graph'].toarray()
     return np.corrcoef(tpm1.reshape(-1),tpm2.reshape(-1))[0,1]
+
+def plot_landscape(sc_object,show_colorbar = False, dim = 2, size_point = 3, alpha_land = 0.5, alpha_point = 0.5,  color_palette_name = 'Set1', contour_levels = 15, elev=10, azim = 4):
+    land_value = sc_object.uns['land_out']['land_value']
+    xv = sc_object.uns['land_out']['grid_x']
+    yv = sc_object.uns['land_out']['grid_y']
+    trans_coord = sc_object.uns['land_out']['trans_coord'] 
+    land_cell = sc_object.obs['land_cell']
+    
+    K = sc_object.obsm['rho'].shape[1]
+    labels =sc_object.obs['attractor'].astype(int)
+    
+    color_palette = sns.color_palette(color_palette_name, K)
+    cluster_colors = [color_palette[x] for x in labels]
+    
+    if dim == 2:
+        plt.contourf(xv, yv, land_value, levels=contour_levels, cmap="Greys_r",zorder=-100, alpha = alpha_land)
+        plt.scatter(*trans_coord.T, s=size_point, linewidth=0, c=cluster_colors, alpha=alpha_point)
+
+    else:
+        ax = plt.axes(projection='3d')
+        ax.scatter(*trans_coord.T,land_cell,s=size_point, linewidth=0, c=cluster_colors, alpha=alpha_point)
+        ax.plot_surface(xv, yv,land_value,rstride=1, cstride=1, linewidth=0, antialiased=True,cmap="Greys_r", alpha = alpha_land, vmin = 0, vmax=np.nanmax(land_value), shade = True)
+        ax.grid(False)
+        ax.axis('off')
+        ax.view_init(elev=elev, azim=azim)
+        
+    if show_colorbar:
+        plt.colorbar()
+        
+
+def infer_lineage(sc_object,si=0,sf=1,method = 'MPFT',flux_fraction = 0.9, size_state = 0.1, size_point = 3, alpha_land = 0.5, alpha_point = 0.5, size_text=20, show_colorbar = False, color_palette_name = 'Set1', contour_levels = 15):
+
+
+    K = sc_object.obsm['rho'].shape[1]
+    centers = sc_object.uns['land_out']['cluster_centers']
+
+    
+
+    P_hat = sc_object.uns['da_out']['P_hat']
+    M = msm.markov_model(P_hat)
+    mu_hat = M.pi
+    
+    if method == 'MPFT':
+        Flux_cg = np.diag(mu_hat.reshape(-1)).dot(P_hat)
+        max_flux_tree = scipy.sparse.csgraph.minimum_spanning_tree(-Flux_cg)
+        max_flux_tree = -max_flux_tree.toarray()
+        #for i in range(K):
+        #    for j in range(i+1,K):   
+        #        max_flux_tree[i,j]= max(max_flux_tree[i,j],max_flux_tree[j,i])
+        #        max_flux_tree[j,i] = max_flux_tree[i,j]
+        
+        nw.plot_network(max_flux_tree, pos=centers, state_scale=size_state, state_sizes=mu_hat, arrow_scale=2.0,arrow_labels= None, arrow_curvature = 0.2, ax=plt.gca(),max_width=1000, max_height=1000)
+        plot_landscape(sc_object, show_colorbar = show_colorbar, size_point = size_point, alpha_land = alpha_land, alpha_point = alpha_point,  color_palette_name = color_palette_name)
+        plt.axis('off')   
+
+        
+    if method == 'MPPT':
+        
+        #state_reorder = np.array(range(K))
+        #state_reorder[0] = si
+        #state_reorder[-1] = sf
+        #state_reorder[sf+1:-1]=state_reorder[sf+1:-1]+1
+        #state_reorder[1:si]=state_reorder[1:si]-1
+        if isinstance(si,int):
+            si = list(map(int, str(si)))
+        
+        if isinstance(sf,int):
+            sf = list(map(int, str(sf)))
+        
+        
+        tpt = msm.tpt(M, si, sf)
+        Fsub = tpt.major_flux(fraction=flux_fraction)
+        Fsubpercent = 100.0 * Fsub / tpt.total_flux
+        
+    
+        plot_landscape(sc_object, show_colorbar = show_colorbar, size_point = size_point, alpha_land = alpha_land, alpha_point = alpha_point,  color_palette_name = color_palette_name, contour_levels = contour_levels)
+        nw.plot_network(Fsubpercent, state_scale=size_state*mu_hat,pos=centers, arrow_label_format="%3.1f",arrow_label_size = size_text,ax=plt.gca(), max_width=1000, max_height=1000)
+        plt.axis('off')   
+
+
+def plot_tensor_heatmap(adata, attractor = 'all', component = 'spliced', top_genes = 50):
+    gene_sort = adata.var['r2_test'].sort_values(ascending=False).index.tolist()
+    if component == 'unspliced':
+        component_ind = 0
+    else:
+        component_ind = 1
+
+    if attractor == 'all':
+        adata.layers['velo_plot'] = adata.obsm['tensor_v_aver'][:,:,component_ind]
+    else:
+        adata.layers['velo_plot'] = adata.obsm['tensor_v'][:,:,component_ind,attractor]
+    sc.pl.heatmap(adata, gene_sort[0:top_genes], groupby='attractor', layer = 'velo_plot',standard_scale = 'var',cmap='RdBu_r')
+    plt.suptitle('Tensor of ' + component + ', Attractor '+str(attractor))
+    plt.show()

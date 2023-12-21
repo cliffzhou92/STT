@@ -1,11 +1,10 @@
-import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import scvelo as scv
 from adjustText import adjust_text
 
 
-def plot_tensor_single(adata, adata_aggr = None, state = 'joint', attractor = None, basis = 'umap', color ='attractor', color_map = None, size = 20, alpha = 0.5, ax = None, show = None, filter_cells = False, member_thresh = 0.05):
+def plot_tensor_single(adata, adata_aggr = None, state = 'joint', attractor = None, basis = 'umap', color ='attractor', color_map = None, size = 20, alpha = 0.5, ax = None, show = None, filter_cells = False, member_thresh = 0.05, density =2):
     
     if attractor == None:
         velo =  adata.obsm['tensor_v_aver'].copy()
@@ -27,20 +26,20 @@ def plot_tensor_single(adata, adata_aggr = None, state = 'joint', attractor = No
         
     if state == 'spliced':
         adata.layers['vs'] = velo[:,gene_select,1]
-        scv.tl.velocity_graph(adata, vkey = 'vs', xkey = 'Ms', gene_subset = gene_select,n_jobs = -1)
+        scv.tl.velocity_graph(adata, vkey = 'vs', xkey = 'Ms',n_jobs = -1)
         scv.pl.velocity_embedding_stream(adata, vkey = 'vs', basis=basis, color=color, title = title+','+'Spliced',color_map = color_map, size = size, alpha = alpha, ax = ax, show = show)
     if state == 'unspliced':
         adata.layers['vu'] = velo[:,gene_select,0]
-        scv.tl.velocity_graph(adata, vkey = 'vu', xkey = 'Mu', gene_subset =gene_select,n_jobs = -1)
+        scv.tl.velocity_graph(adata, vkey = 'vu', xkey = 'Mu',n_jobs = -1)
         scv.pl.velocity_embedding_stream(adata, vkey = 'vu',basis=basis, color=color, title = title+','+'Unspliced',color_map = color_map, size = size, alpha = alpha, ax = ax, show = show)
     if state == 'joint':
         print("check that the input includes aggregated object")
         #adata_aggr.layers['vj'] = np.concatenate((velo[:,gene_select,0],velo[:,gene_select,1]),axis = 1)
         scv.tl.velocity_graph(adata_aggr, vkey = 'vj', xkey = 'Ms',n_jobs = -1)
-        scv.pl.velocity_embedding_stream(adata_aggr, vkey = 'vj',basis=basis, color=color, title = title+','+'Joint',color_map = color_map, size = size, alpha = alpha, ax = ax, show = show)
+        scv.pl.velocity_embedding_stream(adata_aggr, vkey = 'vj',basis=basis, color=color, title = title+','+'Joint',color_map = color_map, size = size, alpha = alpha, ax = ax, show = show, density =density)
         
         
-def plot_tensor(adata, adata_aggr, list_state =['joint','spliced','unspliced'], list_attractor ='all', basis = 'umap',figsize = (8,8),hspace = 0.2,wspace = 0.2, color_map = None,size = 20,alpha = 0.5, filter_cells = False, member_thresh = 0.05):
+def plot_tensor(adata, adata_aggr, list_state =['joint','spliced','unspliced'], list_attractor ='all', basis = 'umap',figsize = (8,8),hspace = 0.2,wspace = 0.2, color_map = None,size = 20,alpha = 0.5, filter_cells = False, member_thresh = 0.05, density =2):
     
     if list_attractor == 'all':
         list_attractor =[None]+list(range(len(adata.obs['attractor'].unique())))
@@ -60,21 +59,21 @@ def plot_tensor(adata, adata_aggr, list_state =['joint','spliced','unspliced'], 
                 basis_plot = basis    
             ax = plt.subplot(nrows, ncols, fig_id)
             fig_id+=1
-            plot_tensor_single(adata, adata_aggr, attractor = attractor, state = state, basis = basis_plot,ax = ax,show = False, member_thresh = member_thresh, filter_cells = filter_cells, size = size, alpha = alpha) 
+            plot_tensor_single(adata, adata_aggr, attractor = attractor, state = state, basis = basis_plot,ax = ax,show = False, member_thresh = member_thresh, filter_cells = filter_cells, size = size, alpha = alpha, density = density) 
 
 
-def plot_tensor_pathway(adata,adata_aggr,pathway_name):
+def plot_tensor_pathway(adata,adata_aggr,pathway_name,basis):
     pathway_set = adata.uns['pathway_select']
-    subset = pathway_set[pathway_name]
+    subset = list(pathway_set[pathway_name])
     subset_orig = adata.uns['gene_subset'] 
     adata.uns['gene_subset'] = subset
     adata_aggr.uns['gene_subset'] = subset+[x+'_u' for x in subset]
-    plot_tensor_single(adata, adata_aggr, basis = 'xy_loc', state= 'joint')
+    plot_tensor_single(adata, adata_aggr, basis = basis, state= 'joint')
     adata.uns['gene_subset'] = subset_orig
     adata_aggr.uns['gene_subset'] = subset_orig
 
 
-def plot_pathway(adata,figsize = (10,10),fontsize = 12,cmp='Set2'):
+def plot_pathway(adata,figsize = (10,10),fontsize = 12,cmp='Set2',size = 20):
     pathway_select = adata.uns['pathway_select']
     # Plot the results
     umap_embedding = adata.uns['pathway_embedding']
@@ -84,14 +83,14 @@ def plot_pathway(adata,figsize = (10,10),fontsize = 12,cmp='Set2'):
     # Create the scatter plot
     fig, ax = plt.subplots(figsize = figsize)
     c_labels = adata.uns['pathway_labels']
-    num_clusters = max(c_labels)
+    num_clusters = max(c_labels)+1
     cmap = plt.cm.get_cmap(cmp, num_clusters)
 
     # Map the labels to colors using the colormap
-    colors = cmap((c_labels - 1) / (num_clusters - 1))
+    colors = cmap(c_labels/ num_clusters)
 
     # Plot the scatter plot with colors based on the labels
-    sc = plt.scatter(x, y, c=colors)
+    sc = plt.scatter(x, y, c=colors, s=size)
 
     # Remove the square outline
     for spine in ['top','right']:
