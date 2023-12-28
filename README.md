@@ -36,15 +36,19 @@ st.plot_tensor(adata, adata_aggr,  basis = 'trans_coord',list_attractor = [0,1,2
 st.plot_top_genes(adata, top_genes = 10) # plot the U-S diagram of top genes with the highest multi-stability score
 
 ```
-The full tutorials are provided as example notebooks below.
+The  tutorials are provided as annotated Jupyter notebooks below.
+
+[Tutorial 1:Basic Usage and Application on Toggle-switch Simulation Dataset](https://github.com/cliffzhou92/STT/blob/release/example_notebooks/example_toggle.ipynb)
+
+[Tutorial 2:Analysis of Spatial Data,Pathway Visualization and Parameter sensitivity](https://github.com/cliffzhou92/STT/blob/release/example_notebooks/example-mouse_brain-spatial.ipynb)
+
+
 ## Example Notebooks
 **System** | **Data Source** | **Notebook File**
 ------------| -------------- | ------------
-Toggle-switch | [Simulation Data](https://github.com/cliffzhou92/STT/blob/main/data/toggle_switch/generating_toggle_data.ipynb) in this study | [notebook](https://github.com/cliffzhou92/STT/blob/main/example_notebooks/example_toggle.ipynb)
 EMT circuit | [Simulation Data](https://github.com/cliffzhou92/STT/tree/main/data/emt_sim/Generating_Dataset.ipynb) in this study |[notebook](https://github.com/cliffzhou92/scTT/blob/main/example_notebooks/example_emt_circuit.ipynb)
 EMT of A549 cell lines |[Cook et al.](https://www.nature.com/articles/s41467-020-16066-2)|[notebook](https://github.com/cliffzhou92/STT/blob/main/example_notebooks/example-emt.ipynb)
 Erythroid lineage in mouse gastrulation |[Pijuan-Sala et al.](https://www.nature.com/articles/s41586-019-0933-9) and [scVelo](https://scvelo.readthedocs.io/scvelo.datasets.gastrulation_erythroid/)|[notebook](https://github.com/cliffzhou92/STT/blob/main/example_notebooks/example-mouse_eryth.ipynb)
 Adult human bone marrow | [Setty et al.](https://www.nature.com/articles/s41587-019-0068-4) and [scVelo](https://scvelo.readthedocs.io/scvelo.datasets.bonemarrow/)| [notebook](https://github.com/cliffzhou92/STT/blob/main/example_notebooks/example-bone_marrow.ipynb)
-Developing Mouse Brain | [Manno et al.](https://www.nature.com/articles/s41586-021-03775-x) and [SIRV](https://zenodo.org/record/6798659)| [notebook](https://github.com/cliffzhou92/STT/blob/main/example_notebooks/example-mouse_brain-spatial.ipynb)
 Developing Chicken Heart | [Mantri et al.](https://www.nature.com/articles/s41467-021-21892-z) and [SIRV](https://zenodo.org/record/6798659)| [notebook](https://github.com/cliffzhou92/STT/blob/main/example_notebooks/example-chicken_heart.ipynb)
 
