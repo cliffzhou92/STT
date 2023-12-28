@@ -19,7 +19,7 @@ conda install -c conda-forge pygpcca
 pip install -r requirements-macos.txt
 ```
 
-## Basic Usage
+## Basic Usage and Tutorials
 ```python
 import sctt as st
 adata.obs['attractor'] =  # initialize the attractor, can use leiden or original annotation
