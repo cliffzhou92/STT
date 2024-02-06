@@ -97,6 +97,19 @@ def plot_para_hist(adata, bins = 20, log = True,figsize = (8,8)):
 
 
 def plot_sankey(vector1, vector2):
+    """
+    Plot a Sankey diagram. Useful to compare between annotations and attractor assignments of STT.
+    Parameters
+    ----------
+    vector1: list
+        A list of labels for the source nodes.
+    vector2: list
+        A list of labels for the target nodes.
+    Returns 
+    ------- 
+    None
+    """
+
     # Ensure both vectors have the same length.
     assert len(vector1) == len(vector2)
 
@@ -139,6 +152,24 @@ def plot_sankey(vector1, vector2):
     fig.show()        
                 
 def compute_tensor_similarity(adata, adata_aggr, pathway1, pathway2, state = 'spliced', attractor = None):
+    """
+    Compute the similarity between two pathways based on the tensor graph
+    Parameters
+    ----------
+    adata: AnnData object
+    adata_aggr: AnnData object
+    pathway1: list
+        List of genes in the first pathway
+    pathway2: list
+        List of genes in the second pathway
+    state: str
+        State of the tensor graph, either 'spliced', 'unspliced', or 'joint'
+    attractor: int
+        Index of the attractor, if None, the average velocity will be used
+    Returns 
+    -------
+    float, the correlation coefficient between the two pathways       
+    """
     if attractor == None:
         velo =  adata.obsm['tensor_v_aver'].copy()
     else:
