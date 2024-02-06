@@ -9,7 +9,7 @@
 
 import os
 import sys
-package_path = os.path.abspath('../')
+package_path = os.path.abspath('../example_notebooks')
 sys.path.insert(0, package_path)
 import stt
 

@@ -1,24 +1,23 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>stt.tl submodule &mdash; STT release documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
   
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=b01f3ba4"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -45,8 +44,8 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="stt.html">STT package</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="stt.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="stt.html">STT package Documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="stt.html#apis">APIs</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="stt.pl.html">stt.pl submodule</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">stt.tl submodule</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#module-contents-calling-by-stt-tl-function-name">Module contents (Calling by stt.tl.function_name)</a></li>
@@ -72,7 +71,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="stt.html">STT package</a></li>
+          <li class="breadcrumb-item"><a href="stt.html">STT package Documentation</a></li>
       <li class="breadcrumb-item active">stt.tl submodule</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/source/stt.tl.rst.txt" rel="nofollow"> View page source</a>
@@ -84,62 +83,9 @@
            <div itemprop="articleBody">
              
   <section id="stt-tl-submodule">
-<h1>stt.tl submodule<a class="headerlink" href="#stt-tl-submodule" title="Permalink to this heading"></a></h1>
+<h1>stt.tl submodule<a class="headerlink" href="#stt-tl-submodule" title="Link to this heading"></a></h1>
 <section id="module-contents-calling-by-stt-tl-function-name">
-<h2>Module contents (Calling by stt.tl.function_name)<a class="headerlink" href="#module-contents-calling-by-stt-tl-function-name" title="Permalink to this heading"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="stt.tl._dynamical_analysis.dynamical_iteration">
-<span class="sig-prename descclassname"><span class="pre">stt.tl._dynamical_analysis.</span></span><span class="sig-name descname"><span class="pre">dynamical_iteration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_states_seq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_aggr_obj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_connectivities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_components</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_neighbors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thresh_ms_gene</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thresh_entropy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_spatial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spa_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spa_conn_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'spatial'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">monitor_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stt.tl._dynamical_analysis.dynamical_iteration" title="Permalink to this definition"></a></dt>
-<dd><p>Perform dynamical iteration on the given AnnData object.</p>
-<section id="parameters">
-<h3>Parameters:<a class="headerlink" href="#parameters" title="Permalink to this heading"></a></h3>
-<dl class="simple">
-<dt>adata: AnnData object</dt><dd><p>Annotated data matrix.</p>
-</dd>
-<dt>n_states: int, optional (default: None)</dt><dd><p>Number of attractor states.</p>
-</dd>
-<dt>n_states_seq: list, optional (default: None)</dt><dd><p>List of number of attractor states for each iteration.</p>
-</dd>
-<dt>n_iter: int, optional (default: 10)</dt><dd><p>Number of iterations.</p>
-</dd>
-<dt>return_aggr_obj: bool, optional (default: False)</dt><dd><p>Whether to return the aggregated object.</p>
-</dd>
-<dt>weight_connectivities: float, optional (default: 0.2)</dt><dd><p>Weight of connectivities.</p>
-</dd>
-<dt>n_components: int, optional (default: 20)</dt><dd><p>Number of components.</p>
-</dd>
-<dt>n_neighbors: int, optional (default: 100)</dt><dd><p>Number of neighbors.</p>
-</dd>
-<dt>thresh_ms_gene: int, optional (default: 0)</dt><dd><p>Threshold for mean spliced gene expression.</p>
-</dd>
-<dt>thresh_entropy: float, optional (default: 0.1)</dt><dd><p>Threshold for entropy.</p>
-</dd>
-<dt>use_spatial: bool, optional (default: False)</dt><dd><p>Whether to use spatial information.</p>
-</dd>
-<dt>spa_weight: float, optional (default: 0.5)</dt><dd><p>Weight of spatial information.</p>
-</dd>
-<dt>spa_conn_key: str, optional (default: ‘spatial’)</dt><dd><p>Key for spatial connectivities.</p>
-</dd>
-<dt>stop_cr: str, optional (default: ‘abs’)</dt><dd><p>Stopping criterion for iteration.</p>
-</dd>
-</dl>
-</section>
-<section id="returns">
-<h3>Returns:<a class="headerlink" href="#returns" title="Permalink to this heading"></a></h3>
-<p>None</p>
-</section>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="stt.tl._construct_landscape.construct_landscape">
-<span class="sig-prename descclassname"><span class="pre">stt.tl._construct_landscape.</span></span><span class="sig-name descname"><span class="pre">construct_landscape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sc_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thresh_cal_cov</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_land</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N_grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coord_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'X_umap'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stt.tl._construct_landscape.construct_landscape" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="stt.tl._pathway_analysis.compute_pathway">
-<span class="sig-prename descclassname"><span class="pre">stt.tl._pathway_analysis.</span></span><span class="sig-name descname"><span class="pre">compute_pathway</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adata_aggr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gene_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stt.tl._pathway_analysis.compute_pathway" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
+<h2>Module contents (Calling by stt.tl.function_name)<a class="headerlink" href="#module-contents-calling-by-stt-tl-function-name" title="Link to this heading"></a></h2>
 </section>
 </section>
 
