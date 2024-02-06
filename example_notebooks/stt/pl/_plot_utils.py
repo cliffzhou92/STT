@@ -163,6 +163,34 @@ def compute_tensor_similarity(adata, adata_aggr, pathway1, pathway2, state = 'sp
     return np.corrcoef(tpm1.reshape(-1),tpm2.reshape(-1))[0,1]
 
 def plot_landscape(sc_object,show_colorbar = False, dim = 2, size_point = 3, alpha_land = 0.5, alpha_point = 0.5,  color_palette_name = 'Set1', contour_levels = 15, elev=10, azim = 4):
+    """
+    Plot the landscape of the attractor landscape
+    Parameters
+    ----------
+    sc_object : AnnData object
+        Annotated data matrix.
+    show_colorbar : bool
+        Whether to show the colorbar
+    dim : int
+        Dimension of the plot
+    size_point : float
+        Size of the points
+    alpha_land : float
+        Transparency of the landscape
+    alpha_point : float 
+        Transparency of the points
+    color_palette_name : str
+        Name of the color palette
+    contour_levels : int
+        Number of contour levels
+    elev : int  
+        Elevation of the 3D plot
+    azim : int  
+        Azimuth of the 3D plot
+    Returns 
+    -------
+    None            
+    """
     land_value = sc_object.uns['land_out']['land_value']
     xv = sc_object.uns['land_out']['grid_x']
     yv = sc_object.uns['land_out']['grid_y']
@@ -192,7 +220,40 @@ def plot_landscape(sc_object,show_colorbar = False, dim = 2, size_point = 3, alp
         
 
 def infer_lineage(sc_object,si=0,sf=1,method = 'MPFT',flux_fraction = 0.9, size_state = 0.1, size_point = 3, alpha_land = 0.5, alpha_point = 0.5, size_text=20, show_colorbar = False, color_palette_name = 'Set1', contour_levels = 15):
-
+    """
+    Infer the lineage among the multi-stable attractors based on most probable flux tree or path
+    Parameters
+    ----------
+    sc_object : AnnData object
+        Annotated data matrix.
+    si : int or list
+        Initial state (attractor index number) of specified transition path, specified when method = 'MPPT'
+    sf : int or list
+        Final state (attractor index number) , specified when method = 'MPPT'
+    method : str
+        Method to infer the lineage, either 'MPFT' or 'MPPT'
+    flux_fraction : float
+        Fraction of the total flux to be considered
+    size_state : float  
+        Size of the state
+    size_point : float
+        Size of the points
+    alpha_land : float
+        Transparency of the landscape
+    alpha_point : float 
+        Transparency of the points
+    size_text : float
+        Size of the text
+    show_colorbar : bool
+        Whether to show the colorbar
+    color_palette_name : str
+        Name of the color palette
+    contour_levels : int
+        Number of contour levels
+    Returns 
+    -------
+    None
+    """
 
     K = sc_object.obsm['rho'].shape[1]
     centers = sc_object.uns['land_out']['cluster_centers']

@@ -37,7 +37,7 @@ def dynamical_analysis(sc_object,sc_object_aggr, n_states = None, n_states_seq =
 
     Returns:
     --------
-    None
+    None, but the results are stored in the AnnData object including the transition matrix, the stationary distribution, the macrostates memberships, the selected genes, and the kernel.
     """
     gene_select = sc_object.var['r2_test'][sc_object.var['r2_test']>thresh_ms_gene].index.tolist()
     gene_subset = [gene+'_u' for gene in gene_select]+gene_select
@@ -83,6 +83,21 @@ def dynamical_analysis(sc_object,sc_object_aggr, n_states = None, n_states_seq =
 
 
 def construct_tenstor(adata, rho, portion = 0.8,l=0):
+    """ 
+    Construct the tensor for the dynamical analysis.
+    Parameters:
+    -----------  
+    adata: AnnData object
+    rho: tensor N_c*N_g*K
+    portion: float, optional (default: 0.8)
+        The portion of the data to be used for training.    
+    l: float, optional (default: 0)
+        The regularization parameter.
+    
+    Returns:
+    --------
+    None, but the tensor is stored in adata.obsm['tensor_v'] and the parameters are stored in adata.uns['par'] 
+    """
     # tensor N_c*N_g*2*K
     K = rho.shape[1]
     par = np.zeros((adata.shape[1],K+1))
@@ -191,7 +206,7 @@ def aver_velo(tensor_v,membership):
 
 def dynamical_iteration(adata, n_states=None, n_states_seq=None, n_iter=10, return_aggr_obj=True, weight_connectivities=0.2, n_components=20, n_neighbors=100, thresh_ms_gene=0, thresh_entropy=0.1, use_spatial=False, spa_weight=0.5, spa_conn_key='spatial', monitor_mode=False, l2=0.1):
     """
-    Perform dynamical iteration on the given AnnData object.
+    Perform dynamical iteration on the given AnnData object. The function updates the attractor states, the tensor, the averaged velocity, and the entropy at each iteration.
 
     Parameters:
     -----------
@@ -223,10 +238,29 @@ def dynamical_iteration(adata, n_states=None, n_states_seq=None, n_iter=10, retu
         Key for spatial connectivities.
     stop_cr: str, optional (default: 'abs')
         Stopping criterion for iteration.
+    monitor_mode: bool, optional (default: False)
+        Whether to use monitor mode.
+    l2: float, optional (default: 0.1)
+        Regularization parameter in tensor estimation.
 
     Returns:
     --------
-    None
+    Default none, but updates the adata.uns with the following keys: 
+    da_out: dict
+        Dictionary of the results of dynamical analysis.
+    gene_subset: list
+        List of selected multi-stable genes.
+    entropy: np.ndarray
+        Array of entropy values.
+    speed: np.ndarray
+        Array of speed values.
+    attractor: np.ndarray
+        Array of attractor states.
+    tensor_v_aver: np.ndarray
+        Array of averaged tensor by attractor membership of cells.
+        
+    If return_aggr_obj is True, the aggregated object with both spliced and unspliced counts of multi-stable genes is returned.
+
     """
     
     adata.uns['da_out']={}

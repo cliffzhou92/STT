@@ -5,7 +5,41 @@ from adjustText import adjust_text
 
 
 def plot_tensor_single(adata, adata_aggr = None, state = 'joint', attractor = None, basis = 'umap', color ='attractor', color_map = None, size = 20, alpha = 0.5, ax = None, show = None, filter_cells = False, member_thresh = 0.05, density =2):
-    
+    """
+    Function to plot a single tensor graph with assgined components
+    Parameters
+    ----------
+    adata: AnnData object
+    adata_aggr: AnnData object
+    state: str
+        State of the tensor graph, 'spliced', 'unspliced' or 'joint'
+    attractor: int
+        Attractor index
+    basis: str
+        Dimensionality reduction basis for the plot
+    color: str
+        Color of the cells, 'attractor' or 'rho'
+    color_map: str
+        Color map for the plot
+    size: int
+        Size of the cells
+    alpha: float    
+        Transparency of the cells
+    ax: matplotlib.axes._subplots.AxesSubplot
+        Axes for the plot
+    show: bool
+        Show the plot
+    filter_cells: bool
+        Filter cells based on the member threshold
+    member_thresh: float
+        Member threshold
+    density: int
+        Density of the streamlines
+    Returns
+    ------- 
+    None, but plots the tensor graph
+
+    """
     if attractor == None:
         velo =  adata.obsm['tensor_v_aver'].copy()
         title = 'All attractors'
@@ -40,7 +74,40 @@ def plot_tensor_single(adata, adata_aggr = None, state = 'joint', attractor = No
         
         
 def plot_tensor(adata, adata_aggr, list_state =['joint','spliced','unspliced'], list_attractor ='all', basis = 'umap',figsize = (8,8),hspace = 0.2,wspace = 0.2, color_map = None,size = 20,alpha = 0.5, filter_cells = False, member_thresh = 0.05, density =2):
-    
+    """
+    Function to plot a series of tensor graphs with assgined components
+    Parameters
+    ----------
+    adata: AnnData object
+    adata_aggr: AnnData object
+    list_state: list
+        List of states of the tensor graph, 'spliced', 'unspliced' or 'joint'
+    list_attractor: list
+        List of attractor index
+    basis: str
+        Dimensionality reduction basis for the plot
+    figsize: tuple
+        Size of the figure
+    hspace: float
+        Height space between subplots
+    wspace: float
+        Width space between subplots
+    color_map: str
+        Color map for the plot
+    size: int  
+        Size of the cells
+    alpha: float
+        Transparency of the cells
+    filter_cells: bool
+        Filter streamlines shown on cells based on the member threshold
+    member_thresh: float
+        Member threshold
+    density: int
+        Density of the streamlines
+    Returns 
+    -------
+    None, but plots the tensor graphs
+    """
     if list_attractor == 'all':
         list_attractor =[None]+list(range(len(adata.obs['attractor'].unique())))
     
@@ -63,6 +130,20 @@ def plot_tensor(adata, adata_aggr, list_state =['joint','spliced','unspliced'], 
 
 
 def plot_tensor_pathway(adata,adata_aggr,pathway_name,basis):
+    """
+    Function to plot the tensor graph of the pathway
+    Parameters
+    ----------
+    adata: AnnData object
+    adata_aggr: AnnData object
+    pathway_name: str
+        Name of the pathway
+    basis: str
+        Dimensionality reduction basis for the plot
+    Returns
+    -------
+    None, but plots the tensor graph of the pathway
+    """
     pathway_set = adata.uns['pathway_select']
     subset = list(pathway_set[pathway_name])
     subset_orig = adata.uns['gene_subset'] 
@@ -74,6 +155,24 @@ def plot_tensor_pathway(adata,adata_aggr,pathway_name,basis):
 
 
 def plot_pathway(adata,figsize = (10,10),fontsize = 12,cmp='Set2',size = 20):
+    """
+    Function to plot the low dimensional emebedding of pathway similarity matrix
+    Parameters
+    ----------
+    adata: AnnData object
+    figsize: tuple
+        Size of the figure
+    fontsize: int
+        Font size of the labels
+    cmp: str    
+        Color map for clusters of pathways based on similariy
+    size: int
+        Size of the cells
+    Returns 
+    -------
+    None, but plots the low dimensional emebedding of pathway similarity matrix
+    """
+
     pathway_select = adata.uns['pathway_select']
     # Plot the results
     umap_embedding = adata.uns['pathway_embedding']
