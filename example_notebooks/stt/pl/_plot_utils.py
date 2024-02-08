@@ -10,6 +10,35 @@ import scipy
 import scanpy as sc
 
 def plot_top_genes(adata, top_genes = 6, ncols = 2, figsize = (8,8), color_map = 'tab10', color ='attractor', attractor = None, hspace = 0.5,wspace = 0.5):
+    """
+    Plot the top multi-stable genes in U-S planes
+
+    Parameters
+    ----------
+    adata: AnnData object
+        Annotated data matrix.
+    top_genes: int  
+        Number of top genes to be plotted
+    ncols: int
+        Number of columns
+    figsize: tuple
+        Size of the figure
+    color_map: str
+        Color map for the plot
+    color: str
+        Color of the plot, either 'attractor' or 'membership'
+    attractor: int
+        Index of the attractor, if None, the average velocity will be used
+    hspace: float
+        Height space between subplots
+    wspace: float
+        Width space between subplots
+    
+    Returns
+    -------
+    None, but plots the top multi-stable genes in U-S planes
+    
+    """
     K = adata.obsm['rho'].shape[1]
     cmp = sns.color_palette(color_map, K)
     U = adata.layers['Mu']
@@ -99,6 +128,7 @@ def plot_para_hist(adata, bins = 20, log = True,figsize = (8,8)):
 def plot_sankey(vector1, vector2):
     """
     Plot a Sankey diagram. Useful to compare between annotations and attractor assignments of STT.
+    
     Parameters
     ----------
     vector1: list
@@ -154,6 +184,7 @@ def plot_sankey(vector1, vector2):
 def compute_tensor_similarity(adata, adata_aggr, pathway1, pathway2, state = 'spliced', attractor = None):
     """
     Compute the similarity between two pathways based on the tensor graph
+    
     Parameters
     ----------
     adata: AnnData object
@@ -166,6 +197,7 @@ def compute_tensor_similarity(adata, adata_aggr, pathway1, pathway2, state = 'sp
         State of the tensor graph, either 'spliced', 'unspliced', or 'joint'
     attractor: int
         Index of the attractor, if None, the average velocity will be used
+    
     Returns 
     -------
     float, the correlation coefficient between the two pathways       
@@ -196,6 +228,7 @@ def compute_tensor_similarity(adata, adata_aggr, pathway1, pathway2, state = 'sp
 def plot_landscape(sc_object,show_colorbar = False, dim = 2, size_point = 3, alpha_land = 0.5, alpha_point = 0.5,  color_palette_name = 'Set1', contour_levels = 15, elev=10, azim = 4):
     """
     Plot the landscape of the attractor landscape
+    
     Parameters
     ----------
     sc_object : AnnData object
@@ -218,6 +251,7 @@ def plot_landscape(sc_object,show_colorbar = False, dim = 2, size_point = 3, alp
         Elevation of the 3D plot
     azim : int  
         Azimuth of the 3D plot
+    
     Returns 
     -------
     None            
@@ -253,6 +287,7 @@ def plot_landscape(sc_object,show_colorbar = False, dim = 2, size_point = 3, alp
 def infer_lineage(sc_object,si=0,sf=1,method = 'MPFT',flux_fraction = 0.9, size_state = 0.1, size_point = 3, alpha_land = 0.5, alpha_point = 0.5, size_text=20, show_colorbar = False, color_palette_name = 'Set1', contour_levels = 15):
     """
     Infer the lineage among the multi-stable attractors based on most probable flux tree or path
+    
     Parameters
     ----------
     sc_object : AnnData object
@@ -262,7 +297,7 @@ def infer_lineage(sc_object,si=0,sf=1,method = 'MPFT',flux_fraction = 0.9, size_
     sf : int or list
         Final state (attractor index number) , specified when method = 'MPPT'
     method : str
-        Method to infer the lineage, either 'MPFT' or 'MPPT'
+        Method to infer the lineage, either 'MPFT'(maxium probability flow tree, global) or 'MPPT'(most probable path tree, local)
     flux_fraction : float
         Fraction of the total flux to be considered
     size_state : float  
@@ -281,6 +316,7 @@ def infer_lineage(sc_object,si=0,sf=1,method = 'MPFT',flux_fraction = 0.9, size_
         Name of the color palette
     contour_levels : int
         Number of contour levels
+    
     Returns 
     -------
     None
@@ -334,6 +370,25 @@ def infer_lineage(sc_object,si=0,sf=1,method = 'MPFT',flux_fraction = 0.9, size_
 
 
 def plot_tensor_heatmap(adata, attractor = 'all', component = 'spliced', top_genes = 50):
+    """
+    Plot the heatmap of the transition tensor
+
+    Parameters
+    ----------
+    adata: AnnData object
+        Annotated data matrix.
+    attractor: int
+        Index of the attractor, if None, the average velocity will be used
+    component: str
+        Component of the tensor, either 'spliced' or 'unspliced'
+    top_genes: int
+        Number of top genes to be plotted
+    
+    Returns
+    -------
+    None
+    """
+
     gene_sort = adata.var['r2_test'].sort_values(ascending=False).index.tolist()
     if component == 'unspliced':
         component_ind = 0

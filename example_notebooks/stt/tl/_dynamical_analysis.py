@@ -85,6 +85,7 @@ def dynamical_analysis(sc_object,sc_object_aggr, n_states = None, n_states_seq =
 def construct_tenstor(adata, rho, portion = 0.8,l=0):
     """ 
     Construct the tensor for the dynamical analysis.
+    
     Parameters:
     -----------  
     adata: AnnData object

@@ -27,6 +27,31 @@ def optimal_kmeans(data, k_range):
     return final_labels
 
 def compute_pathway(adata,adata_aggr,db_name,gene_num = 3):
+    """
+    Compute tensor similarities among pathways
+
+    Parameters
+    ----------
+    adata: AnnData
+        Annotated data matrix
+    adata_aggr: AnnData
+        Aggregated data matrix
+    db_name: str
+        Name of the database
+    gene_num: int
+        Minimum number of genes in the pathway overlapped with STT multi-stable genes
+
+    Returns
+    -------
+    None, but updates adata.uns with the following
+    pathway_select: dict
+        Selected pathways satisfying the gene_num condition
+    pathway_embedding: np.ndarray
+        UMAP embedding of the pathway similarities
+    pathway_labels: np.ndarray
+        Cluster labels of the pathway embedding
+    
+    """
     pathway = gp.parser.download_library(name = db_name)
     tpm_dict = {}
     pathway_select = {}

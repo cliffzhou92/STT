@@ -5,6 +5,7 @@ from sklearn.mixture import GaussianMixture
 def construct_landscape(sc_object,thresh_cal_cov = 0.3, scale_axis = 1.0, scale_land = 1.1, N_grid = 100, coord_key = 'X_umap'):
     """
     Function to construct the landscape of the multi-stable attractors
+    
     Parameters  
     ----------  
     sc_object: AnnData object
@@ -19,6 +20,7 @@ def construct_landscape(sc_object,thresh_cal_cov = 0.3, scale_axis = 1.0, scale_
         Number of grid points for the landscape
     coord_key: str 
         Key of the coordinates in the sc_object.obsm
+    
     Returns     
     -------
     None, but updates the sc_object.uns with the following  

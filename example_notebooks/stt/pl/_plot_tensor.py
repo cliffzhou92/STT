@@ -7,6 +7,7 @@ from adjustText import adjust_text
 def plot_tensor_single(adata, adata_aggr = None, state = 'joint', attractor = None, basis = 'umap', color ='attractor', color_map = None, size = 20, alpha = 0.5, ax = None, show = None, filter_cells = False, member_thresh = 0.05, density =2):
     """
     Function to plot a single tensor graph with assgined components
+    
     Parameters
     ----------
     adata: AnnData object
@@ -35,6 +36,7 @@ def plot_tensor_single(adata, adata_aggr = None, state = 'joint', attractor = No
         Member threshold
     density: int
         Density of the streamlines
+    
     Returns
     ------- 
     None, but plots the tensor graph
@@ -76,6 +78,7 @@ def plot_tensor_single(adata, adata_aggr = None, state = 'joint', attractor = No
 def plot_tensor(adata, adata_aggr, list_state =['joint','spliced','unspliced'], list_attractor ='all', basis = 'umap',figsize = (8,8),hspace = 0.2,wspace = 0.2, color_map = None,size = 20,alpha = 0.5, filter_cells = False, member_thresh = 0.05, density =2):
     """
     Function to plot a series of tensor graphs with assgined components
+    
     Parameters
     ----------
     adata: AnnData object
@@ -104,6 +107,7 @@ def plot_tensor(adata, adata_aggr, list_state =['joint','spliced','unspliced'], 
         Member threshold
     density: int
         Density of the streamlines
+    
     Returns 
     -------
     None, but plots the tensor graphs
@@ -132,6 +136,7 @@ def plot_tensor(adata, adata_aggr, list_state =['joint','spliced','unspliced'], 
 def plot_tensor_pathway(adata,adata_aggr,pathway_name,basis):
     """
     Function to plot the tensor graph of the pathway
+    
     Parameters
     ----------
     adata: AnnData object
@@ -140,6 +145,7 @@ def plot_tensor_pathway(adata,adata_aggr,pathway_name,basis):
         Name of the pathway
     basis: str
         Dimensionality reduction basis for the plot
+    
     Returns
     -------
     None, but plots the tensor graph of the pathway
@@ -157,6 +163,7 @@ def plot_tensor_pathway(adata,adata_aggr,pathway_name,basis):
 def plot_pathway(adata,figsize = (10,10),fontsize = 12,cmp='Set2',size = 20):
     """
     Function to plot the low dimensional emebedding of pathway similarity matrix
+    
     Parameters
     ----------
     adata: AnnData object
@@ -168,6 +175,7 @@ def plot_pathway(adata,figsize = (10,10),fontsize = 12,cmp='Set2',size = 20):
         Color map for clusters of pathways based on similariy
     size: int
         Size of the cells
+    
     Returns 
     -------
     None, but plots the low dimensional emebedding of pathway similarity matrix
