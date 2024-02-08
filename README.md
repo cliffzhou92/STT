@@ -36,7 +36,9 @@ st.plot_tensor(adata, adata_aggr,  basis = 'trans_coord',list_attractor = [0,1,2
 st.plot_top_genes(adata, top_genes = 10) # plot the U-S diagram of top genes with the highest multi-stability score
 
 ```
-The  tutorials are provided as annotated Jupyter notebooks below.
+The documentations of function APIs are available at [here](https://stt-doc.readthedocs.io/en/latest/) and the website is under active development to include more tutorials.
+
+The available tutorials are also provided as annotated Jupyter notebooks below.
 
 [Tutorial 1:Basic Usage and Application on Toggle-switch Simulation Dataset](https://github.com/cliffzhou92/STT/blob/release/example_notebooks/example_toggle.ipynb)
 
