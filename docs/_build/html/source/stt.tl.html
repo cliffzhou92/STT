@@ -1,23 +1,24 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../">
+<html class="writer-html5" lang="en">
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>stt.tl submodule &mdash; STT release documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
 
   
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=b01f3ba4"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
-        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -83,9 +84,124 @@
            <div itemprop="articleBody">
              
   <section id="stt-tl-submodule">
-<h1>stt.tl submodule<a class="headerlink" href="#stt-tl-submodule" title="Link to this heading"></a></h1>
+<h1>stt.tl submodule<a class="headerlink" href="#stt-tl-submodule" title="Permalink to this heading"></a></h1>
 <section id="module-contents-calling-by-stt-tl-function-name">
-<h2>Module contents (Calling by stt.tl.function_name)<a class="headerlink" href="#module-contents-calling-by-stt-tl-function-name" title="Link to this heading"></a></h2>
+<h2>Module contents (Calling by stt.tl.function_name)<a class="headerlink" href="#module-contents-calling-by-stt-tl-function-name" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="stt.tl._dynamical_analysis.dynamical_iteration">
+<span class="sig-prename descclassname"><span class="pre">stt.tl._dynamical_analysis.</span></span><span class="sig-name descname"><span class="pre">dynamical_iteration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_states_seq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_aggr_obj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_connectivities</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_components</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_neighbors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thresh_ms_gene</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thresh_entropy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_spatial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spa_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spa_conn_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'spatial'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">monitor_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stt.tl._dynamical_analysis.dynamical_iteration" title="Permalink to this definition"></a></dt>
+<dd><p>Perform dynamical iteration on the given AnnData object. The function updates the attractor states, the tensor, the averaged velocity, and the entropy at each iteration.</p>
+<section id="parameters">
+<h3>Parameters:<a class="headerlink" href="#parameters" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>adata: AnnData object</dt><dd><p>Annotated data matrix.</p>
+</dd>
+<dt>n_states: int, optional (default: None)</dt><dd><p>Number of attractor states.</p>
+</dd>
+<dt>n_states_seq: list, optional (default: None)</dt><dd><p>List of number of attractor states for each iteration.</p>
+</dd>
+<dt>n_iter: int, optional (default: 10)</dt><dd><p>Number of iterations.</p>
+</dd>
+<dt>return_aggr_obj: bool, optional (default: False)</dt><dd><p>Whether to return the aggregated object.</p>
+</dd>
+<dt>weight_connectivities: float, optional (default: 0.2)</dt><dd><p>Weight of connectivities.</p>
+</dd>
+<dt>n_components: int, optional (default: 20)</dt><dd><p>Number of components.</p>
+</dd>
+<dt>n_neighbors: int, optional (default: 100)</dt><dd><p>Number of neighbors.</p>
+</dd>
+<dt>thresh_ms_gene: int, optional (default: 0)</dt><dd><p>Threshold for mean spliced gene expression.</p>
+</dd>
+<dt>thresh_entropy: float, optional (default: 0.1)</dt><dd><p>Threshold for entropy.</p>
+</dd>
+<dt>use_spatial: bool, optional (default: False)</dt><dd><p>Whether to use spatial information.</p>
+</dd>
+<dt>spa_weight: float, optional (default: 0.5)</dt><dd><p>Weight of spatial information.</p>
+</dd>
+<dt>spa_conn_key: str, optional (default: ‘spatial’)</dt><dd><p>Key for spatial connectivities.</p>
+</dd>
+<dt>stop_cr: str, optional (default: ‘abs’)</dt><dd><p>Stopping criterion for iteration.</p>
+</dd>
+<dt>monitor_mode: bool, optional (default: False)</dt><dd><p>Whether to use monitor mode.</p>
+</dd>
+<dt>l2: float, optional (default: 0.1)</dt><dd><p>Regularization parameter in tensor estimation.</p>
+</dd>
+</dl>
+</section>
+<section id="returns">
+<h3>Returns:<a class="headerlink" href="#returns" title="Permalink to this heading"></a></h3>
+<p>Default none, but updates the adata.uns with the following keys:
+da_out: dict</p>
+<blockquote>
+<div><p>Dictionary of the results of dynamical analysis.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>gene_subset: list</dt><dd><p>List of selected multi-stable genes.</p>
+</dd>
+<dt>entropy: np.ndarray</dt><dd><p>Array of entropy values.</p>
+</dd>
+<dt>speed: np.ndarray</dt><dd><p>Array of speed values.</p>
+</dd>
+<dt>attractor: np.ndarray</dt><dd><p>Array of attractor states.</p>
+</dd>
+<dt>tensor_v_aver: np.ndarray</dt><dd><p>Array of averaged tensor by attractor membership of cells.</p>
+</dd>
+</dl>
+<p>If return_aggr_obj is True, the aggregated object with both spliced and unspliced counts of multi-stable genes is returned.</p>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stt.tl._construct_landscape.construct_landscape">
+<span class="sig-prename descclassname"><span class="pre">stt.tl._construct_landscape.</span></span><span class="sig-name descname"><span class="pre">construct_landscape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sc_object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thresh_cal_cov</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_land</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N_grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coord_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'X_umap'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stt.tl._construct_landscape.construct_landscape" title="Permalink to this definition"></a></dt>
+<dd><p>Function to construct the landscape of the multi-stable attractors</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sc_object</strong> (<em>AnnData object</em>) – Single cell data object</p></li>
+<li><p><strong>thresh_cal_cov</strong> (<em>float</em>) – Threshold to calculate the covariance matrix</p></li>
+<li><p><strong>scale_axis</strong> (<em>float</em>) – Scaling factor for the axis</p></li>
+<li><p><strong>scale_land</strong> (<em>float</em>) – Scaling factor for the landscape</p></li>
+<li><p><strong>N_grid</strong> (<em>int</em>) – Number of grid points for the landscape</p></li>
+<li><p><strong>coord_key</strong> (<em>str</em>) – Key of the coordinates in the sc_object.obsm</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>None, but updates the sc_object.uns with the following</em></p></li>
+<li><p><em>keys</em></p></li>
+<li><p><strong>land_out</strong> (<em>dict</em>) – Dictionary of landscape values and grid points</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stt.tl._pathway_analysis.compute_pathway">
+<span class="sig-prename descclassname"><span class="pre">stt.tl._pathway_analysis.</span></span><span class="sig-name descname"><span class="pre">compute_pathway</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">adata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adata_aggr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gene_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#stt.tl._pathway_analysis.compute_pathway" title="Permalink to this definition"></a></dt>
+<dd><p>Compute tensor similarities among pathways</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>adata</strong> (<em>AnnData</em>) – Annotated data matrix</p></li>
+<li><p><strong>adata_aggr</strong> (<em>AnnData</em>) – Aggregated data matrix</p></li>
+<li><p><strong>db_name</strong> (<em>str</em>) – Name of the database</p></li>
+<li><p><strong>gene_num</strong> (<em>int</em>) – Minimum number of genes in the pathway overlapped with STT multi-stable genes</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>None, but updates adata.uns with the following</em></p></li>
+<li><p><strong>pathway_select</strong> (<em>dict</em>) – Selected pathways satisfying the gene_num condition</p></li>
+<li><p><strong>pathway_embedding</strong> (<em>np.ndarray</em>) – UMAP embedding of the pathway similarities</p></li>
+<li><p><strong>pathway_labels</strong> (<em>np.ndarray</em>) – Cluster labels of the pathway embedding</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 

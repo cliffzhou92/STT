@@ -27,6 +27,7 @@ def construct_landscape(sc_object,thresh_cal_cov = 0.3, scale_axis = 1.0, scale_
     keys:   
     land_out: dict
         Dictionary of landscape values and grid points
+    
     """
        
     mu_hat = sc_object.uns['da_out']['mu_hat']
